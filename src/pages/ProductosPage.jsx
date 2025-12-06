@@ -54,23 +54,23 @@ export default function ProductosPage() {
         <div className="cart-list">
           {items.map((producto_p) => (
             <div key={producto_p.id} className="cart-item">
-              <div className="cart-left">
+              <div className="cart-up">
                 <img
                   className="cart-image"
                   src={producto_p.imagen}
                   alt="pedido"
                 />
-                <div>
-                  <h5 className="cart-title">{producto_p.nombre}</h5>
-                  <p className="cart-price">Bs. {producto_p.precio}</p>
+                <div className="cart-target">
+                  <h3 className="cart-title">{producto_p.nombre}</h3>
+                  <span className="cart-price">Bs. {producto_p.precio}</span>
                 </div>
               </div>
 
-              <div className="cart-right">
-                <label className="qty-label">Cantidad</label>
+              <div className="cart-down">
+                <label className="cant-label">Cantidad</label>
                 <input
                   type="number"
-                  className="qty-input"
+                  className="cant-input"
                   min={1}
                   value={producto_p.cantidad}
                   onChange={(e) => onQty(producto_p.id, e.target.value)}
@@ -86,16 +86,24 @@ export default function ProductosPage() {
           ))}
         </div>
 
-        <div className="subtotal-card">
-          <p className="subtotal-label">Subtotal</p>
-          <p className="subtotal-value">{toFixed2(totalPrice)}</p>
+        <div className="Pago">
+          <div className="SubtotalTotal">
+            <p className="subtotal-label">Subtotal:</p>
+            <p className="subtotal-value">{toFixed2(totalPrice)}</p>
+          </div>
+
+          <div className="SubtotalTotal">
+            <p className="total-label">Total:</p>
+            <p className="total-value">{toFixed2(totalPrice)}</p>
+          </div>
         </div>
 
-        <div className="actions-row">
-          <button className="btn-secondary" onClick={clearCart}>
+        <div className="BtnPago">
+          <button>Procesar Pago</button>
+
+          <button className="clear" onClick={clearCart}>
             Vaciar carrito
           </button>
-          <button className="btn-primary">Procesar Pago</button>
         </div>
       </div>
     </Container>
@@ -120,8 +128,8 @@ const Container = styled.div`
     margin-right: 5px;
     background-color: white;
     padding: 20px;
-    width: 100%;
 
+    flex: 0 0 70%;
     .ContainerButtons {
       display: flex;
       gap: 20px;
@@ -134,103 +142,153 @@ const Container = styled.div`
     margin-left: 4px;
     background-color: white;
     padding: 20px;
-    width: 30%;
 
-    /* Para que no crezca infinito y se organice en columna */
+    flex: 0 0 27%;
+
     display: flex;
     flex-direction: column;
-    max-height: 93vh; /* ajusta según te guste */
+    max-height: 93vh;
     h4 {
       margin-top: 10px;
     }
 
     .cart-list {
       margin-top: 12px;
-      flex: 1; /* ocupa el espacio disponible */
-      overflow-y: auto; /* scroll vertical solo aquí */
-      padding-right: 8px; /* deja espacio para la barra de scroll */
-    }
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+      .cart-item {
+        width: 100%;
+        box-sizing: border-box;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px;
+        border-radius: 12px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-top: 12px;
 
-    .cart-item {
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px; /* p-4 */
-      border-radius: 12px; /* rounded-xl */
-      background-color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      margin-top: 12px;
-    }
+        .cart-up {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 8px;
 
-    /* flex items-center gap-4 */
-    .cart-left {
-      display: flex;
-      align-items: center;
-      gap: 16px; /* gap-4 */
-    }
+          .cart-image {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 8px; /* rounded-lg */
+          }
 
-    /* w-16 h-16 object-cover rounded-lg */
-    .cart-image {
-      width: 64px; /* w-16 */
-      height: 64px; /* h-16 */
-      object-fit: cover;
-      border-radius: 8px; /* rounded-lg */
-    }
+          .cart-target {
+            .cart-title {
+              margin: 3px 0;
+              font-weight: 600;
+              color: #000000;
+            }
+            .cart-price {
+              font-weight: bold;
+              margin: 4px 0 0;
+              font-size: 18px;
+              color: #4b5563;
+            }
+          }
+        }
 
-    /* font-semibold text-black */
-    .cart-title {
-      margin: 0;
-      font-weight: 600;
-      color: #000000;
-    }
+        .cart-down {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 17px;
 
-    /* text-sm text-gray-600 */
-    .cart-price {
-      margin: 4px 0 0;
-      font-size: 14px; /* text-sm */
-      color: #4b5563; /* text-gray-600 */
-    }
+          font-weight: bold;
 
-    /* flex items-center gap-3 */
-    .cart-right {
-      display: flex;
-      align-items: center;
-      gap: 12px; /* gap-3 */
-    }
+          .cant-label {
+            color: #000000;
+          }
 
-    /* text-sm text-black */
-    .qty-label {
-      font-size: 14px;
-      color: #000000;
-    }
+          .cant-input {
+            font-size: 17px;
+            width: 64px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            outline: none;
+            margin: 0;
 
-    /* w-16 rounded-lg border px-2 py-1 text-gray-700 */
-    .qty-input {
-      width: 64px;
-      padding: 4px 8px; /* py-1 px-2 */
-      border-radius: 8px; /* rounded-lg */
-      border: 1px solid #d1d5db;
-      color: #374151; /* text-gray-700 */
-      font-size: 14px;
-      outline: none;
-      margin: 0; /* para que no herede el margin global del input */
+            &:focus {
+              border-color: #111827;
+            }
+          }
 
-      &:focus {
-        border-color: #111827;
+          .remove-btn {
+            margin-left: auto;
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #dc2626;
+            color: #ffffff;
+            font-size: 18px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #b91c1c;
+            }
+          }
+        }
       }
     }
 
-    /* px-3 py-1 rounded-lg bg-red-600 text-white */
-    .remove-btn {
-      padding: 4px 12px; /* py-1 px-3 */
-      border-radius: 8px; /* rounded-lg */
-      border: none;
-      background-color: #dc2626; /* bg-red-600 */
-      color: #ffffff;
-      font-size: 14px;
-      cursor: pointer;
+    .Pago {
+      margin: 10px 0;
+      font-size: 23px;
 
-      &:hover {
-        background-color: #b91c1c;
+      .SubtotalTotal {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: bold;
+        margin: 1rem 0;
+      }
+
+      .subtotal-value {
+        margin-left: auto;
+      }
+
+      .total-value {
+        margin-left: auto;
+      }
+    }
+
+    .BtnPago {
+      gap: 20px;
+      justify-content: center;
+      padding: 10px;
+      display: flex;
+
+      button {
+        border-style: solid;
+        font-size: 20px;
+        margin-top: 5px;
+        padding: 10px;
+        background-color: #f7c22e;
+        color: black;
+        font-weight: 600;
+        border-radius: 12px;
+        transition: 0.2s;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #007a52;
+        }
+      }
+
+      .clear {
+        &:hover {
+          background-color: red;
+        }
       }
     }
   }

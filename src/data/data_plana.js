@@ -368,3 +368,97 @@ const categorias = [
 export function getCategorias() {
   return categorias;
 }
+
+const estado_pedidos = [
+  { id: 0, nombre: "Todos" },
+  { id: 1, nombre: "Pendientes" },
+  { id: 2, nombre: "En preparacion" },
+  { id: 3, nombre: "Listos" },
+  { id: 4, nombre: "Entregados" },
+];
+
+export function getEstados() {
+  return estado_pedidos;
+}
+
+// Mapeo de estados:
+// 0 = TODOS (no es de la bd)
+// 1 = Pendiente
+// 2 = En Preparacion
+// 3 = Listos
+// 4 = Entregados
+
+const pedidos = [
+  {
+    id: 1,
+    codigo: "COD-1242353",
+    id_estado: 2,
+    estado: "En Preparacion",
+    items: [
+      { nombre: "Cafe Americano", cantidad: 1, precio: 2.5 },
+      { nombre: "Cafe Latte", cantidad: 1, precio: 1.5 },
+    ],
+    total: 4.0,
+    hora: "4:37 p.m.",
+  },
+  {
+    id: 2,
+    codigo: "COD-1242354",
+    id_estado: 1,
+    estado: "Pendiente",
+    items: [
+      { nombre: "Capuccino", cantidad: 2, precio: 3.0 },
+      { nombre: "Empanada de queso", cantidad: 1, precio: 2.0 },
+    ],
+    total: 8.0,
+    hora: "4:40 p.m.",
+  },
+  {
+    id: 3,
+    codigo: "COD-1242355",
+    id_estado: 3,
+    estado: "Listos",
+    items: [
+      { nombre: "Mocaccino", cantidad: 1, precio: 3.5 },
+      { nombre: "Tostadas", cantidad: 2, precio: 1.5 },
+    ],
+    total: 6.5,
+    hora: "4:45 p.m.",
+  },
+  {
+    id: 4,
+    codigo: "COD-1242356",
+    id_estado: 4,
+    estado: "Entregados",
+    items: [
+      { nombre: "Cafe Americano", cantidad: 2, precio: 2.5 },
+      { nombre: "Brownie", cantidad: 1, precio: 2.5 },
+    ],
+    total: 7.5,
+    hora: "4:50 p.m.",
+  },
+  {
+    id: 5,
+    codigo: "COD-1242357",
+    id_estado: 2,
+    estado: "En Preparacion",
+    items: [
+      { nombre: "Chocolate Caliente", cantidad: 1, precio: 3.0 },
+      { nombre: "Croissant", cantidad: 2, precio: 2.0 },
+    ],
+    total: 7.0,
+    hora: "4:55 p.m.",
+  },
+];
+
+export function getPedidos() {
+  return pedidos;
+}
+
+export function filtrarPedidos(id_est) {
+  if (id_est === 0) return pedidos;
+
+  const filtrado = pedidos.filter((it) => it.id_estado === id_est);
+
+  return filtrado;
+}

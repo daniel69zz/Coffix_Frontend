@@ -12,7 +12,7 @@ const linksArray = [
   {
     label: "Pedidos",
     Icon: FaClipboardList,
-    to: "/",
+    to: "pedidos",
   },
   {
     label: "Reportes",

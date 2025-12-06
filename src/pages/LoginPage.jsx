@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -14,7 +13,9 @@ export default function Login() {
           <input type="text" placeholder="Ingresa tu usuario" />
           <label>Contraseña:</label>
           <input type="password" placeholder="Ingresa tu contraseña" />
-          <button onClick={() => navigate("/main")}>Iniciar sesión</button>
+          <button onClick={() => navigate("/main/ventas")}>
+            Iniciar sesión
+          </button>
         </LeftBox>
       </LeftPanel>
 
@@ -22,7 +23,7 @@ export default function Login() {
         <LogoCircle>
           <img src="logo_sis_v3.png" alt="logo cafeteria" />
         </LogoCircle>
-        <h1>CAFETERIA OZIEL'S FRIENDS</h1>
+        <h1>CAFETERIA COFFIX</h1>
       </RightPanel>
     </Container>
   );
