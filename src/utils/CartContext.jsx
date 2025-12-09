@@ -9,7 +9,9 @@ export function CartProvider({ children }) {
     if (cantidad <= 0) return;
 
     setItems((l_prev) => {
-      const it_found = l_prev.findIndex((it) => it.id === producto.id);
+      const it_found = l_prev.findIndex(
+        (it) => it.id_producto === producto.id_producto
+      );
 
       if (it_found !== -1) {
         const copia = [...l_prev];
@@ -33,7 +35,7 @@ export function CartProvider({ children }) {
   };
 
   const removeItem = (id_producto) => {
-    setItems((l_prev) => l_prev.filter((it) => it.id !== id_producto));
+    setItems((l_prev) => l_prev.filter((it) => it.id_producto !== id_producto));
   };
 
   const setQty = (id, qty) => {

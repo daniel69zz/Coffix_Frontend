@@ -18,10 +18,10 @@ export default function ProductCard({ producto }) {
 
   return (
     <Card>
-      <img src={producto.imagen} alt={producto.nombre} />
+      <img src={`/${producto.path_img}`} alt={producto.nombre} />
 
       <CardContent>
-        <div className="CategoryTag">{producto.categoria}</div>
+        <div className="CategoryTag">{producto.nombre_tipo}</div>
 
         <h2>{producto.nombre}</h2>
 

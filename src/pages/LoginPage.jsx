@@ -1,21 +1,46 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../services/AuthContext";
+import { useState } from "react";
 
 export default function Login() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
+  const [usuario, setUsuario] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await login(usuario, password);
+      navigate("/main/ventas");
+    } catch (err) {
+      setError(err.message || "Error al iniciar sesión");
+    }
+  };
   return (
     <Container>
       <LeftPanel>
         <LeftBox>
           <h2>INICIAR SESION</h2>
           <label>Usuario:</label>
-          <input type="text" placeholder="Ingresa tu usuario" />
+          <input
+            type="text"
+            placeholder="Ingresa tu usuario"
+            onChange={(e) => setUsuario(e.target.value)}
+          />
           <label>Contraseña:</label>
-          <input type="password" placeholder="Ingresa tu contraseña" />
-          <button onClick={() => navigate("/main/ventas")}>
-            Iniciar sesión
-          </button>
+          <input
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button onClick={onSubmit}>Iniciar sesión</button>
         </LeftBox>
       </LeftPanel>
 

@@ -1,38 +1,106 @@
 import styled from "styled-components";
+import { actualizarPedido } from "../services/pedidos";
 
-export default function PedidoCard({ ped }) {
+function formatearHora(fc_hora) {
+  if (!fc_hora) return "";
+
+  const partes = fc_hora.split("T");
+  if (partes.length === 2) {
+    return partes[1].substring(0, 5);
+  }
+
+  return fc_hora;
+}
+
+// siguiente estado según el actual
+function getNextEstado(estado) {
+  switch (estado) {
+    case "Pendiente":
+      return "En preparacion";
+    case "En preparacion":
+      return "Listo";
+    case "Listo":
+      return "Entregado";
+    case "Entregado":
+    default:
+      return null; // ya no cambia más
+  }
+}
+
+// texto del botón según estado actual
+function getButtonLabel(estado) {
+  switch (estado) {
+    case "Pendiente":
+      return "MARCAR EN PREPARACIÓN";
+    case "En preparacion":
+      return "MARCAR LISTO";
+    case "Listo":
+      return "MARCAR ENTREGADO";
+    case "Entregado":
+      return "PEDIDO ENTREGADO";
+    default:
+      return "ACTUALIZAR ESTADO";
+  }
+}
+
+export default function PedidoCard({ ped, onEstadoActualizado }) {
+  const handleClick = async (e) => {
+    e.stopPropagation();
+
+    const next = getNextEstado(ped.estado);
+    if (!next) return;
+
+    try {
+      const actualizado = await actualizarPedido(ped.id_pedido, next);
+
+      if (onEstadoActualizado) {
+        onEstadoActualizado(actualizado);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error al actualizar el estado del pedido");
+    }
+  };
+
+  const buttonLabel = getButtonLabel(ped.estado);
+  const isDisabled = getNextEstado(ped.estado) === null;
+
   return (
     <CardContainer>
       <HeaderRow>
-        <Codigo>{ped.codigo}</Codigo>
-        <EstadoPill $estado={ped.id_estado}>{ped.estado}</EstadoPill>
+        <Codigo>{ped.cod_pedido}</Codigo>
+
+        <EstadoPill $estado={ped.estado}>{ped.estado}</EstadoPill>
       </HeaderRow>
 
-      <ItemsWrapper>
-        {ped.items.map((it, idx) => (
-          <ItemRow key={idx}>
-            <span>
-              {it.cantidad}x {it.nombre}
-            </span>
-            <span>${it.precio.toFixed(2)}</span>
-          </ItemRow>
-        ))}
-      </ItemsWrapper>
+      {Array.isArray(ped.detalles) && ped.detalles.length > 0 && (
+        <ItemsWrapper>
+          {ped.detalles.map((it, idx) => (
+            <ItemRow key={idx}>
+              <span>
+                {it.cantidad}x {it.producto.nombre}
+              </span>
+              <span>
+                $
+                {typeof it.producto.precio === "number"
+                  ? it.producto.precio.toFixed(2)
+                  : it.producto.precio}
+              </span>
+            </ItemRow>
+          ))}
+        </ItemsWrapper>
+      )}
 
       <Divider />
 
-      {/* TOTAL */}
-      <TotalRow>
-        {/* <strong>Total</strong>
-        <strong>${ped.total.toFixed(1)}</strong> */}
-      </TotalRow>
-
       <FooterRow>
         <span>Creado</span>
-        <span>{ped.hora}</span>
+        <span>{formatearHora(ped.fc_hora)}</span>
       </FooterRow>
 
-      <MarcarListoButton>MARCAR LISTO</MarcarListoButton>
+      <MarcarListoButton disabled={isDisabled} onClick={handleClick}>
+        {buttonLabel}
+      </MarcarListoButton>
     </CardContainer>
   );
 }
@@ -65,21 +133,25 @@ const EstadoPill = styled.span`
   font-weight: bold;
   padding: 4px 8px;
   border-radius: 4px;
-  background-color: ${({ $estado }) =>
-    $estado === 1
-      ? "#FF0000"
-      : $estado === 2
-      ? "#66CCCC"
-      : $estado === 3
-      ? "#33FF33"
-      : "#999999"};
   border: 1px solid black;
+
+  background-color: ${({ $estado }) =>
+    $estado === "Pendiente"
+      ? "#FF0000"
+      : $estado === "En preparacion"
+      ? "#66CCCC"
+      : $estado === "Listo"
+      ? "#33FF33"
+      : $estado === "Entregado"
+      ? "#999999"
+      : "#999999"};
+
   color: ${({ $estado }) =>
-    $estado === 1
+    $estado === "Pendiente"
       ? "#000000"
-      : $estado === 2
+      : $estado === "En preparacion"
       ? "#3333FF"
-      : $estado === 3
+      : $estado === "Listo"
       ? "#003300"
       : "#000000"};
 `;
@@ -105,12 +177,6 @@ const Divider = styled.hr`
   margin: 6px 0;
 `;
 
-const TotalRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-`;
-
 const FooterRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -130,4 +196,10 @@ const MarcarListoButton = styled.button`
   font-size: 11px;
   letter-spacing: 0.5px;
   cursor: pointer;
+
+  &:disabled {
+    background: #cccccc;
+    border-color: #aaaaaa;
+    cursor: default;
+  }
 `;

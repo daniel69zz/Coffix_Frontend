@@ -1,15 +1,45 @@
 import styled from "styled-components";
 import ProductCard from "../components/ProductCard";
-import { getProductos, getCategorias } from "../data/data_plana";
-import { useState } from "react";
+import { getCategorias } from "../utils/data_plana";
+import { useState, useEffect } from "react";
 import { useCart } from "../utils/CartContext";
+import { filtrarProductos } from "../services/productos";
 
 export default function ProductosPage() {
-  const [btnactive, setBtnactive] = useState(null);
+  // 0 = "Todos"
+  const [btnactive, setBtnactive] = useState(0);
+  const [productosFiltrados, setProductosFiltrados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
+
+  const categorias = getCategorias();
   const { items, removeItem, totalPrice, clearCart, setQty } = useCart();
 
-  const productos = getProductos();
-  const categorias = getCategorias();
+  const recargarProductos = () => {
+    setLoading(true);
+    setError(null);
+
+    filtrarProductos(btnactive)
+      .then((data) => {
+        setProductosFiltrados(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    recargarProductos();
+  }, [btnactive]);
+
+  const filtrar = (idCategoria) => {
+    setBtnactive(idCategoria);
+  };
 
   const onQty = (id, value) => {
     const n = Number(value) || 1;
@@ -18,34 +48,69 @@ export default function ProductosPage() {
 
   const toFixed2 = (value) => {
     if (!value) return 0;
-
     return parseFloat(value.toFixed(2));
   };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  // filtro por texto encima de lo que devolvió la API
+  const productosMostrados = productosFiltrados.filter((p) => {
+    if (!search.trim()) return true;
+    const term = search.toLowerCase();
+    return (
+      p.nombre.toLowerCase().includes(term) ||
+      (p.nombre_tipo && p.nombre_tipo.toLowerCase().includes(term))
+    );
+  });
+
+  if (error) {
+    return (
+      <Container>
+        <div className="FirstPart">
+          <p>Ocurrió un error: {error}</p>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container>
+      {/* PANEL IZQUIERDO: PRODUCTOS */}
       <div className="FirstPart">
         <h2>PRODUCTOS</h2>
-        <input type="text" placeholder="Buscar productos..." />
+
+        <input
+          type="text"
+          placeholder="Buscar productos..."
+          value={search}
+          onChange={handleSearchChange}
+        />
+
         <div className="ContainerButtons">
           {categorias.map((categ) => (
             <Button
               key={categ.id}
               id={categ.id}
-              onClick={() => setBtnactive(categ.id)}
+              onClick={() => filtrar(categ.id)}
               $activo={btnactive === categ.id}
             >
               {categ.categoria}
             </Button>
           ))}
         </div>
+
+        {loading && <p>Cargando productos...</p>}
+
         <Grid>
-          {productos.map((producto) => (
-            <ProductCard key={producto.id} producto={producto} />
+          {productosMostrados.map((producto) => (
+            <ProductCard key={producto.id_producto} producto={producto} />
           ))}
         </Grid>
       </div>
 
-      {/* Parte Pedido */}
+      {/* PANEL DERECHO: CARRITO */}
       <div className="SecondPart">
         <h2>PEDIDO ACTUAL</h2>
         <h4>Nombre del Cliente (opcional)</h4>
@@ -53,11 +118,11 @@ export default function ProductosPage() {
 
         <div className="cart-list">
           {items.map((producto_p) => (
-            <div key={producto_p.id} className="cart-item">
+            <div key={producto_p.id_producto} className="cart-item">
               <div className="cart-up">
                 <img
                   className="cart-image"
-                  src={producto_p.imagen}
+                  src={`/${producto_p.path_img}`}
                   alt="pedido"
                 />
                 <div className="cart-target">
@@ -73,11 +138,13 @@ export default function ProductosPage() {
                   className="cant-input"
                   min={1}
                   value={producto_p.cantidad}
-                  onChange={(e) => onQty(producto_p.id, e.target.value)}
+                  onChange={(e) =>
+                    onQty(producto_p.id_producto, e.target.value)
+                  }
                 />
                 <button
                   className="remove-btn"
-                  onClick={() => removeItem(producto_p.id)}
+                  onClick={() => removeItem(producto_p.id_producto)}
                 >
                   Quitar
                 </button>
@@ -128,9 +195,10 @@ const Container = styled.div`
     margin-right: 5px;
     background-color: white;
     padding: 20px;
-
     flex: 0 0 70%;
+
     .ContainerButtons {
+      margin: 18px 0;
       display: flex;
       gap: 20px;
     }
@@ -144,10 +212,10 @@ const Container = styled.div`
     padding: 20px;
 
     flex: 0 0 27%;
-
     display: flex;
     flex-direction: column;
     max-height: 93vh;
+
     h4 {
       margin-top: 10px;
     }
@@ -157,6 +225,7 @@ const Container = styled.div`
       flex: 1;
       overflow-y: auto;
       padding-right: 8px;
+
       .cart-item {
         width: 100%;
         box-sizing: border-box;
@@ -178,7 +247,7 @@ const Container = styled.div`
             width: 64px;
             height: 64px;
             object-fit: cover;
-            border-radius: 8px; /* rounded-lg */
+            border-radius: 8px;
           }
 
           .cart-target {
@@ -201,7 +270,6 @@ const Container = styled.div`
           align-items: center;
           gap: 12px;
           font-size: 17px;
-
           font-weight: bold;
 
           .cant-label {

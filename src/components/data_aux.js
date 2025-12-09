@@ -22,7 +22,7 @@ const linksArray = [
   {
     label: "Restock",
     Icon: BsFillBoxSeamFill,
-    to: "/",
+    to: "restock",
   },
 ];
 

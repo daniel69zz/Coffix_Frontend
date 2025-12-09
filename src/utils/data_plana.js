@@ -1,70 +1,3 @@
-const productos = [
-  {
-    id: 1,
-    nombre: "Café Americano",
-    descripcion: "Café recién molido.",
-    precio: 12,
-    categoria: "Bebidas",
-    imagen: "/img/cafe1.png",
-  },
-  {
-    id: 2,
-    nombre: "Capuchino",
-    descripcion: "Delicioso y cremoso.",
-    precio: 18,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-  {
-    id: 3,
-    nombre: "Bebida Oziel",
-    descripcion: "Delicioso y cremoso.",
-    precio: 23,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-  {
-    id: 4,
-    nombre: "Bebida Jose",
-    descripcion: "Sabor de Villazon.",
-    precio: 34,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-  {
-    id: 5,
-    nombre: "Bebida Jose",
-    descripcion: "Sabor de Villazon.",
-    precio: 34,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-  {
-    id: 6,
-    nombre: "Bebida Jose",
-    descripcion: "Sabor de Villazon.",
-    precio: 34,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-  {
-    id: 7,
-    nombre: "Bebida Jose",
-    descripcion: "Sabor de Villazon.",
-    precio: 34,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-  {
-    id: 8,
-    nombre: "Bebida Jose",
-    descripcion: "Sabor de Villazon.",
-    precio: 34,
-    categoria: "Bebidas",
-    imagen: "/img/capuchino.png",
-  },
-];
-
 export function getProductos() {
   return data_prod;
 }
@@ -359,10 +292,10 @@ export const data_prod = [
 ];
 
 const categorias = [
-  { id: 1, categoria: "Todos" },
-  { id: 2, categoria: "Bebidas Calientes" },
-  { id: 3, categoria: "Bebidas Frías" },
-  { id: 4, categoria: "Panadería" },
+  { id: 0, categoria: "Todos" },
+  { id: 1, categoria: "Bebidas Calientes" },
+  { id: 2, categoria: "Bebidas Frías" },
+  { id: 3, categoria: "Panadería" },
 ];
 
 export function getCategorias() {

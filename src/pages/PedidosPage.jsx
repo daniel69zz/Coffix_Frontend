@@ -1,41 +1,69 @@
 import styled from "styled-components";
-import { getEstados, filtrarPedidos } from "../data/data_plana";
-import { useState } from "react";
+import { getEstados, filtrarPedidos } from "../services/pedidos";
+import { useEffect, useState } from "react";
 import PedidoCard from "../components/PedidoCard";
 
 export function PedidosPage() {
-  const [btnactive, setBtnactive] = useState(0);
-  const [pedidosFiltrados, setPedidosFiltrados] = useState(() =>
-    filtrarPedidos(btnactive)
-  );
+  const [btnactive, setBtnactive] = useState("Todos");
+  const [pedidosFiltrados, setPedidosFiltrados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const estados_pedidos = getEstados();
 
-  const filtrar = (est_id) => {
-    setBtnactive(est_id);
-    setPedidosFiltrados(() => filtrarPedidos(est_id));
+  const recargarPedidos = () => {
+    setLoading(true);
+    setError(null);
+
+    filtrarPedidos(btnactive)
+      .then((data) => {
+        setPedidosFiltrados(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    recargarPedidos();
+  }, [btnactive]);
+
+  const filtrar = (nombre) => {
+    setBtnactive(nombre);
   };
 
   return (
     <Container>
       <div className="Pedidos">
         <h2>GESTION DE PEDIDOS</h2>
+
         <div className="ContainerButtons">
           {estados_pedidos.map((estado) => (
             <Button
               key={estado.id}
               id={estado.id}
-              onClick={() => filtrar(estado.id)}
-              $activo={btnactive === estado.id}
+              onClick={() => filtrar(estado.nombre)}
+              $activo={btnactive === estado.nombre}
             >
               {estado.nombre}
             </Button>
           ))}
         </div>
 
+        {loading && <p>Cargando pedidos...</p>}
+        {error && <p>Error: {error}</p>}
+
         <div className="PedidosC">
           {pedidosFiltrados.map((ped) => (
-            <PedidoCard key={ped.id} ped={ped} />
+            <PedidoCard
+              key={ped.id_pedido}
+              ped={ped}
+              onEstadoActualizado={recargarPedidos}
+            />
           ))}
         </div>
       </div>
