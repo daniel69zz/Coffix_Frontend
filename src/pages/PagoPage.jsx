@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import logo from "/logo_sis_v3.png";
 import { registrarPedido } from "../services/pedidos";
+import { Message } from "../utils/Message";
 
 export default function PagoPage({
   total = 0,
@@ -77,12 +78,10 @@ export default function PagoPage({
 
       <Content>
         {pagado ? (
-          <SuccessWrapper>
-            <h2>PAGO REGISTRADO EXITOSAMENTE</h2>
-            <button type="button" onClick={onCancelar}>
-              CERRAR
-            </button>
-          </SuccessWrapper>
+          <Message
+            mensaje="PAGO REGISTRADO EXITOSAMENTE"
+            onCancelar={onCancelar}
+          />
         ) : (
           <>
             <FieldRow>

@@ -17,7 +17,7 @@ const linksArray = [
   {
     label: "Reportes",
     Icon: GiHistogram,
-    to: "/",
+    to: "reporte",
   },
   {
     label: "Restock",

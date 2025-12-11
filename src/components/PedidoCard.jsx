@@ -52,7 +52,7 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
       const actualizado = await actualizarPedido(ped.id_pedido, next);
 
       if (onEstadoActualizado) {
-        onEstadoActualizado(actualizado);
+        onEstadoActualizado(`Pedido ${ped.cod_pedido} actualizado a "${next}"`);
       }
     } catch (err) {
       console.error(err);

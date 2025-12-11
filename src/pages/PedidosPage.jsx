@@ -2,12 +2,16 @@ import styled from "styled-components";
 import { getEstados, filtrarPedidos } from "../services/pedidos";
 import { useEffect, useState } from "react";
 import PedidoCard from "../components/PedidoCard";
+import { Message } from "../utils/Message";
 
 export function PedidosPage() {
   const [btnactive, setBtnactive] = useState("Todos");
   const [pedidosFiltrados, setPedidosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [showMessage, setShowMessage] = useState(false);
+  const [mensaje, setMensaje] = useState("");
 
   const estados_pedidos = getEstados();
 
@@ -36,10 +40,20 @@ export function PedidosPage() {
     setBtnactive(nombre);
   };
 
+  const handleEstadoActualizado = (msg) => {
+    recargarPedidos();
+    setMensaje(msg || "Estado del pedido actualizado correctamente");
+    setShowMessage(true);
+  };
+
   return (
     <Container>
       <div className="Pedidos">
         <h2>GESTION DE PEDIDOS</h2>
+
+        {showMessage && (
+          <Message mensaje={mensaje} onCancelar={() => setShowMessage(false)} />
+        )}
 
         <div className="ContainerButtons">
           {estados_pedidos.map((estado) => (
@@ -62,7 +76,7 @@ export function PedidosPage() {
             <PedidoCard
               key={ped.id_pedido}
               ped={ped}
-              onEstadoActualizado={recargarPedidos}
+              onEstadoActualizado={handleEstadoActualizado}
             />
           ))}
         </div>

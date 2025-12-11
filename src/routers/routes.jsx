@@ -5,6 +5,7 @@ import ProductosPage from "../pages/ProductosPage";
 import { PedidosPage } from "../pages/PedidosPage";
 import { PrivateRouter } from "./PrivateRouter";
 import { GestionStockPage } from "../pages/GestionStockPage";
+import { ReportePage } from "../pages/ReportePage";
 
 export default function MyRoutes() {
   return (
@@ -17,6 +18,7 @@ export default function MyRoutes() {
           <Route path="ventas" element={<ProductosPage />} />
           <Route path="pedidos" element={<PedidosPage />} />
           <Route path="restock" element={<GestionStockPage />} />
+          <Route path="reporte" element={<ReportePage />} />
         </Route>
       </Route>
     </Routes>

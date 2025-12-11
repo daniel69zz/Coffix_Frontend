@@ -1,25 +1,31 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import {
-  getCategorias,
-  filtrarProductos,
-  actualizar_stock_producto,
-} from "../services/productos";
+import { getCategorias, filtrarProductos } from "../services/productos";
+import { Message } from "../utils/Message";
+import RestockModal from "../utils/RestockModal"; // 👈 default import
 
 export function GestionStockPage() {
-  const [categoriaActiva, setCategoriaActiva] = useState(0);
+  // igual que ProductosPage: 0 = "Todos"
+  const [btnactive, setBtnactive] = useState(0);
   const [busqueda, setBusqueda] = useState("");
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const categorias = getCategorias ? getCategorias() : [];
+  // producto seleccionado para restock
+  const [productoRestock, setProductoRestock] = useState(null);
+
+  // mensaje de éxito estilo modal
+  const [showMessage, setShowMessage] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+
+  const categorias = getCategorias();
 
   const cargarProductos = () => {
     setLoading(true);
     setError(null);
 
-    filtrarProductos(categoriaActiva)
+    filtrarProductos(btnactive)
       .then((data) => {
         setProductos(data);
       })
@@ -34,35 +40,19 @@ export function GestionStockPage() {
 
   useEffect(() => {
     cargarProductos();
-  }, [categoriaActiva]);
+  }, [btnactive]);
 
-  const onBuscar = (e) => {
-    e.preventDefault();
+  // abrir el modal de restock para el producto seleccionado
+  const onRestock = (prod) => {
+    setProductoRestock(prod);
   };
 
-  const onRestock = async (prod) => {
-    try {
-      const input = window.prompt(
-        `Cantidad a restockear para "${prod.nombre}":`,
-        "5"
-      );
-
-      if (input === null) return;
-
-      const cantidad = Number(input);
-
-      if (!Number.isFinite(cantidad) || cantidad <= 0) {
-        alert("Cantidad inválida. Debe ser un número mayor a 0.");
-        return;
-      }
-
-      await actualizar_stock_producto(prod.id_producto, cantidad);
-
-      cargarProductos();
-    } catch (err) {
-      console.error(err);
-      alert(err.message || "Error al hacer restock del producto");
-    }
+  // lo que pasa cuando el modal termina de actualizar bien
+  const handleRestockActualizado = () => {
+    setProductoRestock(null);
+    cargarProductos();
+    setMensaje("Stock actualizado correctamente");
+    setShowMessage(true);
   };
 
   const productosFiltrados = productos.filter((prod) => {
@@ -75,7 +65,7 @@ export function GestionStockPage() {
     );
   });
 
-  const categoriaActualObj = categorias.find((c) => c.id === categoriaActiva);
+  const categoriaActualObj = categorias.find((c) => c.id === btnactive);
   const tituloTabla =
     categoriaActualObj && categoriaActualObj.id !== 0
       ? categoriaActualObj.categoria
@@ -86,35 +76,39 @@ export function GestionStockPage() {
       <div className="Stock">
         <h2>GESTION DE STOCK</h2>
 
-        <FiltrosBox>
-          <h3>Filtros de Categoria</h3>
+        {/* 🧊 Modal para actualizar stock */}
+        {productoRestock && (
+          <RestockModal
+            producto={productoRestock}
+            onCancelar={() => setProductoRestock(null)}
+            onActualizado={handleRestockActualizado}
+          />
+        )}
 
-          <div className="linea">
-            <span>Categoria:</span>
-            <div className="botones">
-              {categorias.map((cat) => (
-                <FilterButton
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategoriaActiva(cat.id)}
-                  $activo={categoriaActiva === cat.id}
-                >
-                  {cat.categoria}
-                </FilterButton>
-              ))}
-            </div>
+        {/* ✅ Mensaje de éxito */}
+        {showMessage && (
+          <Message mensaje={mensaje} onCancelar={() => setShowMessage(false)} />
+        )}
 
-            <form onSubmit={onBuscar} className="buscar">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-              />
-              <SearchButton type="submit">Buscar</SearchButton>
-            </form>
-          </div>
-        </FiltrosBox>
+        <input
+          type="text"
+          placeholder="Buscar productos..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+
+        <div className="ContainerButtons">
+          {categorias.map((categ) => (
+            <Button
+              key={categ.id}
+              id={categ.id}
+              onClick={() => setBtnactive(categ.id)}
+              $activo={btnactive === categ.id}
+            >
+              {categ.categoria}
+            </Button>
+          ))}
+        </div>
 
         <TablaBox>
           <h3>{tituloTabla}</h3>
@@ -181,6 +175,15 @@ const Container = styled.div`
   display: flex;
   margin-right: 10px;
 
+  input {
+    margin: 15px 0;
+    border-radius: 5px;
+    padding: 2px 3px;
+    width: 100%;
+    border-width: 2px;
+    border-color: black;
+  }
+
   .Stock {
     border-radius: 10px;
     margin: 20px;
@@ -188,71 +191,18 @@ const Container = styled.div`
     background-color: white;
     padding: 20px;
     width: 100%;
+
+    .ContainerButtons {
+      margin: 18px 0;
+      display: flex;
+      gap: 20px;
+    }
   }
 
   h2 {
     font-size: 22px;
     margin-bottom: 10px;
   }
-`;
-
-const FiltrosBox = styled.div`
-  border-radius: 10px;
-  border: 1px solid black;
-  padding: 18px 20px;
-  margin: 16px 0;
-
-  h3 {
-    margin-bottom: 12px;
-  }
-
-  .linea {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .botones {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .buscar {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-
-    input {
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: 1px solid black;
-      min-width: 180px;
-    }
-  }
-
-  span {
-    font-weight: 500;
-  }
-`;
-
-const FilterButton = styled.button`
-  padding: 6px 16px;
-  border-radius: 6px;
-  border: 1px solid black;
-  background-color: ${({ $activo }) => ($activo ? "#555" : "#e4e4e4")};
-  color: ${({ $activo }) => ($activo ? "white" : "black")};
-  cursor: pointer;
-  font-size: 14px;
-`;
-
-const SearchButton = styled.button`
-  padding: 6px 16px;
-  border-radius: 6px;
-  border: 1px solid black;
-  background-color: white;
-  cursor: pointer;
-  font-size: 14px;
 `;
 
 const TablaBox = styled.div`
@@ -277,7 +227,7 @@ const TablaHeader = styled.div`
 
 const TablaBody = styled.div`
   font-size: 18px;
-  max-height: 55vh;
+  max-height: 320px;
   overflow-y: auto;
 `;
 
@@ -326,4 +276,16 @@ const RestockButton = styled.button`
   background-color: white;
   cursor: pointer;
   font-size: 14px;
+`;
+
+const Button = styled.div`
+  padding: 5px;
+  border-radius: 5px;
+  border-style: solid;
+  border-color: black;
+  font-size: 16px;
+  cursor: pointer;
+
+  background-color: ${({ $activo }) => ($activo ? "black" : "white")};
+  color: ${({ $activo }) => ($activo ? "white" : "black")};
 `;
