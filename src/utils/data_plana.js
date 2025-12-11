@@ -314,12 +314,11 @@ export function getEstados() {
   return estado_pedidos;
 }
 
-// Mapeo de estados:
 // 0 = TODOS (no es de la bd)
 // 1 = Pendiente
 // 2 = En Preparacion
-// 3 = Listos
-// 4 = Entregados
+// 3 = Listo
+// 4 = Entregado
 
 const pedidos = [
   {

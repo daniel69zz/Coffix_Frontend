@@ -4,6 +4,7 @@ import { getCategorias } from "../utils/data_plana";
 import { useState, useEffect } from "react";
 import { useCart } from "../utils/CartContext";
 import { filtrarProductos } from "../services/productos";
+import PagoPage from "./PagoPage";
 
 export default function ProductosPage() {
   // 0 = "Todos"
@@ -12,6 +13,9 @@ export default function ProductosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+
+  const [mostrandoPago, setMostrandoPago] = useState(false);
+  const [nombreCliente, setNombreCliente] = useState("");
 
   const categorias = getCategorias();
   const { items, removeItem, totalPrice, clearCart, setQty } = useCart();
@@ -55,7 +59,6 @@ export default function ProductosPage() {
     setSearch(e.target.value);
   };
 
-  // filtro por texto encima de lo que devolvió la API
   const productosMostrados = productosFiltrados.filter((p) => {
     if (!search.trim()) return true;
     const term = search.toLowerCase();
@@ -76,106 +79,144 @@ export default function ProductosPage() {
   }
 
   return (
-    <Container>
-      {/* PANEL IZQUIERDO: PRODUCTOS */}
-      <div className="FirstPart">
-        <h2>PRODUCTOS</h2>
+    <>
+      <Container>
+        <div className="FirstPart">
+          <h2>PRODUCTOS</h2>
 
-        <input
-          type="text"
-          placeholder="Buscar productos..."
-          value={search}
-          onChange={handleSearchChange}
-        />
+          <input
+            type="text"
+            placeholder="Buscar productos..."
+            value={search}
+            onChange={handleSearchChange}
+          />
 
-        <div className="ContainerButtons">
-          {categorias.map((categ) => (
-            <Button
-              key={categ.id}
-              id={categ.id}
-              onClick={() => filtrar(categ.id)}
-              $activo={btnactive === categ.id}
-            >
-              {categ.categoria}
-            </Button>
-          ))}
+          <div className="ContainerButtons">
+            {categorias.map((categ) => (
+              <Button
+                key={categ.id}
+                id={categ.id}
+                onClick={() => filtrar(categ.id)}
+                $activo={btnactive === categ.id}
+              >
+                {categ.categoria}
+              </Button>
+            ))}
+          </div>
+
+          {loading && <p>Cargando productos...</p>}
+
+          <Grid>
+            {productosMostrados.map((producto) => (
+              <ProductCard key={producto.id_producto} producto={producto} />
+            ))}
+          </Grid>
         </div>
 
-        {loading && <p>Cargando productos...</p>}
+        <div className="SecondPart">
+          <h2>PEDIDO ACTUAL</h2>
+          <h4>Nombre del Cliente (opcional)</h4>
+          <input
+            type="text"
+            placeholder="Ingrese nombre..."
+            value={nombreCliente}
+            onChange={(e) => setNombreCliente(e.target.value)}
+          />
 
-        <Grid>
-          {productosMostrados.map((producto) => (
-            <ProductCard key={producto.id_producto} producto={producto} />
-          ))}
-        </Grid>
-      </div>
+          <div className="cart-list">
+            {items.map((producto_p) => (
+              <div key={producto_p.id_producto} className="cart-item">
+                <div className="cart-up">
+                  <img
+                    className="cart-image"
+                    src={`/${producto_p.path_img}`}
+                    alt="pedido"
+                  />
+                  <div className="cart-target">
+                    <h3 className="cart-title">{producto_p.nombre}</h3>
+                    <span className="cart-price">Bs. {producto_p.precio}</span>
+                  </div>
+                </div>
 
-      {/* PANEL DERECHO: CARRITO */}
-      <div className="SecondPart">
-        <h2>PEDIDO ACTUAL</h2>
-        <h4>Nombre del Cliente (opcional)</h4>
-        <input type="text" placeholder="Ingrese nombre..." />
-
-        <div className="cart-list">
-          {items.map((producto_p) => (
-            <div key={producto_p.id_producto} className="cart-item">
-              <div className="cart-up">
-                <img
-                  className="cart-image"
-                  src={`/${producto_p.path_img}`}
-                  alt="pedido"
-                />
-                <div className="cart-target">
-                  <h3 className="cart-title">{producto_p.nombre}</h3>
-                  <span className="cart-price">Bs. {producto_p.precio}</span>
+                <div className="cart-down">
+                  <label className="cant-label">Cantidad</label>
+                  <input
+                    type="number"
+                    className="cant-input"
+                    min={1}
+                    value={producto_p.cantidad}
+                    onChange={(e) =>
+                      onQty(producto_p.id_producto, e.target.value)
+                    }
+                  />
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeItem(producto_p.id_producto)}
+                  >
+                    Quitar
+                  </button>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="cart-down">
-                <label className="cant-label">Cantidad</label>
-                <input
-                  type="number"
-                  className="cant-input"
-                  min={1}
-                  value={producto_p.cantidad}
-                  onChange={(e) =>
-                    onQty(producto_p.id_producto, e.target.value)
-                  }
-                />
-                <button
-                  className="remove-btn"
-                  onClick={() => removeItem(producto_p.id_producto)}
-                >
-                  Quitar
-                </button>
-              </div>
+          <div className="Pago">
+            <div className="SubtotalTotal">
+              <p className="subtotal-label">Subtotal:</p>
+              <p className="subtotal-value">{toFixed2(totalPrice)}</p>
             </div>
-          ))}
-        </div>
 
-        <div className="Pago">
-          <div className="SubtotalTotal">
-            <p className="subtotal-label">Subtotal:</p>
-            <p className="subtotal-value">{toFixed2(totalPrice)}</p>
+            <div className="SubtotalTotal">
+              <p className="total-label">Total:</p>
+              <p className="total-value">{toFixed2(totalPrice)}</p>
+            </div>
           </div>
 
-          <div className="SubtotalTotal">
-            <p className="total-label">Total:</p>
-            <p className="total-value">{toFixed2(totalPrice)}</p>
+          <div className="BtnPago">
+            <button onClick={() => setMostrandoPago(true)}>
+              Procesar Pago
+            </button>
+
+            <button className="clear" onClick={clearCart}>
+              Vaciar carrito
+            </button>
           </div>
         </div>
+      </Container>
 
-        <div className="BtnPago">
-          <button>Procesar Pago</button>
-
-          <button className="clear" onClick={clearCart}>
-            Vaciar carrito
-          </button>
-        </div>
-      </div>
-    </Container>
+      {mostrandoPago && (
+        <Overlay>
+          <div className="EspacioModal">
+            <PagoPage
+              total={toFixed2(totalPrice)}
+              items={items}
+              nombreCliente={nombreCliente}
+              onCancelar={() => setMostrandoPago(false)}
+              onRegistrarPago={() => {
+                clearCart();
+              }}
+            />
+          </div>
+        </Overlay>
+      )}
+    </>
   );
 }
+
+const Overlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+
+  .EspacioModal {
+    background-color: #fff85a;
+    padding: 30px;
+  }
+`;
 
 const Container = styled.div`
   display: flex;
@@ -229,8 +270,6 @@ const Container = styled.div`
       .cart-item {
         width: 100%;
         box-sizing: border-box;
-        align-items: center;
-        justify-content: space-between;
         padding: 4px;
         border-radius: 12px;
         background-color: #ffffff;
@@ -254,7 +293,6 @@ const Container = styled.div`
             .cart-title {
               margin: 3px 0;
               font-weight: 600;
-              color: #000000;
             }
             .cart-price {
               font-weight: bold;
@@ -272,23 +310,12 @@ const Container = styled.div`
           font-size: 17px;
           font-weight: bold;
 
-          .cant-label {
-            color: #000000;
-          }
-
           .cant-input {
             font-size: 17px;
             width: 64px;
             padding: 4px 8px;
             border-radius: 8px;
             border: 1px solid #d1d5db;
-            color: #374151;
-            outline: none;
-            margin: 0;
-
-            &:focus {
-              border-color: #111827;
-            }
           }
 
           .remove-btn {
@@ -297,13 +324,9 @@ const Container = styled.div`
             border-radius: 8px;
             border: none;
             background-color: #dc2626;
-            color: #ffffff;
+            color: white;
             font-size: 18px;
             cursor: pointer;
-
-            &:hover {
-              background-color: #b91c1c;
-            }
           }
         }
       }
@@ -321,10 +344,7 @@ const Container = styled.div`
         margin: 1rem 0;
       }
 
-      .subtotal-value {
-        margin-left: auto;
-      }
-
+      .subtotal-value,
       .total-value {
         margin-left: auto;
       }
@@ -345,18 +365,11 @@ const Container = styled.div`
         color: black;
         font-weight: 600;
         border-radius: 12px;
-        transition: 0.2s;
         cursor: pointer;
-
-        &:hover {
-          background-color: #007a52;
-        }
       }
 
-      .clear {
-        &:hover {
-          background-color: red;
-        }
+      .clear:hover {
+        background-color: red;
       }
     }
   }

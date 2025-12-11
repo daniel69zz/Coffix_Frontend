@@ -34,3 +34,15 @@ export async function filtrarProductos(tipo) {
 
   return res.json();
 }
+
+export async function actualizar_stock_producto(id_producto, cantidad) {
+  const url = `${API_PRODUCTOS}/${id_producto}/restock?cantidad=${cantidad}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    throw new Error("Error al actualizar stock del producto");
+  }
+}

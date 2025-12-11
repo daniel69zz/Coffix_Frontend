@@ -12,7 +12,6 @@ function formatearHora(fc_hora) {
   return fc_hora;
 }
 
-// siguiente estado según el actual
 function getNextEstado(estado) {
   switch (estado) {
     case "Pendiente":
@@ -23,11 +22,10 @@ function getNextEstado(estado) {
       return "Entregado";
     case "Entregado":
     default:
-      return null; // ya no cambia más
+      return null;
   }
 }
 
-// texto del botón según estado actual
 function getButtonLabel(estado) {
   switch (estado) {
     case "Pendiente":

@@ -1,4 +1,3 @@
-// routes/MyRoutes.jsx
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../pages/MainLayout";
 import Login from "../pages/LoginPage";

@@ -1,11 +1,13 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-// AJUSTA ESTOS IMPORTS A TU PROYECTO
-// import { getCategorias, filtrarProductos } from "../services/productos";
-import { getCategorias } from "../services/productos";
+import {
+  getCategorias,
+  filtrarProductos,
+  actualizar_stock_producto,
+} from "../services/productos";
 
 export function GestionStockPage() {
-  const [categoriaActiva, setCategoriaActiva] = useState("Todos");
+  const [categoriaActiva, setCategoriaActiva] = useState(0);
   const [busqueda, setBusqueda] = useState("");
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,22 @@ export function GestionStockPage() {
 
   const categorias = getCategorias ? getCategorias() : [];
 
-  const cargarProductos = () => {};
+  const cargarProductos = () => {
+    setLoading(true);
+    setError(null);
+
+    filtrarProductos(categoriaActiva)
+      .then((data) => {
+        setProductos(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     cargarProductos();
@@ -21,42 +38,68 @@ export function GestionStockPage() {
 
   const onBuscar = (e) => {
     e.preventDefault();
-    cargarProductos();
   };
 
-  const onRestock = (prod) => {
-    // acá luego puedes abrir modal / navegar / llamar a servicio de restock
-    console.log("Restock producto:", prod);
+  const onRestock = async (prod) => {
+    try {
+      const input = window.prompt(
+        `Cantidad a restockear para "${prod.nombre}":`,
+        "5"
+      );
+
+      if (input === null) return;
+
+      const cantidad = Number(input);
+
+      if (!Number.isFinite(cantidad) || cantidad <= 0) {
+        alert("Cantidad inválida. Debe ser un número mayor a 0.");
+        return;
+      }
+
+      await actualizar_stock_producto(prod.id_producto, cantidad);
+
+      cargarProductos();
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Error al hacer restock del producto");
+    }
   };
+
+  const productosFiltrados = productos.filter((prod) => {
+    if (!busqueda.trim()) return true;
+
+    const term = busqueda.toLowerCase();
+    return (
+      prod.nombre.toLowerCase().includes(term) ||
+      (prod.nombre_tipo && prod.nombre_tipo.toLowerCase().includes(term))
+    );
+  });
+
+  const categoriaActualObj = categorias.find((c) => c.id === categoriaActiva);
+  const tituloTabla =
+    categoriaActualObj && categoriaActualObj.id !== 0
+      ? categoriaActualObj.categoria
+      : "Todos los productos";
 
   return (
     <Container>
       <div className="Stock">
         <h2>GESTION DE STOCK</h2>
 
-        {/* PANEL DE FILTROS */}
         <FiltrosBox>
           <h3>Filtros de Categoria</h3>
 
           <div className="linea">
             <span>Categoria:</span>
             <div className="botones">
-              <FilterButton
-                type="button"
-                onClick={() => setCategoriaActiva("Todos")}
-                $activo={categoriaActiva === "Todos"}
-              >
-                Todos
-              </FilterButton>
-
               {categorias.map((cat) => (
                 <FilterButton
                   key={cat.id}
                   type="button"
-                  onClick={() => setCategoriaActiva(cat.nombre)}
-                  $activo={categoriaActiva === cat.nombre}
+                  onClick={() => setCategoriaActiva(cat.id)}
+                  $activo={categoriaActiva === cat.id}
                 >
-                  {cat.nombre}
+                  {cat.categoria}
                 </FilterButton>
               ))}
             </div>
@@ -73,9 +116,8 @@ export function GestionStockPage() {
           </div>
         </FiltrosBox>
 
-        {/* TABLA DE PRODUCTOS */}
         <TablaBox>
-          <h3>Bebidas calientes</h3>
+          <h3>{tituloTabla}</h3>
 
           <TablaHeader>
             <span>Nombre</span>
@@ -90,20 +132,25 @@ export function GestionStockPage() {
           {error && <p>Error: {error}</p>}
 
           <TablaBody>
-            {productos.map((prod) => {
-              const disponible = prod.stock_actual > 0;
-              const stockBajo = prod.stock_actual <= 1;
+            {productosFiltrados.map((prod) => {
+              const disponible = prod.stock > 0;
+              const stockBajo = prod.stock <= 10;
+
+              const precioFormateado =
+                typeof prod.precio === "number"
+                  ? prod.precio.toFixed(2)
+                  : prod.precio;
 
               return (
                 <TablaRow key={prod.id_producto}>
                   <span>{prod.nombre}</span>
-                  <span>{prod.categoria}</span>
-                  <span>${prod.precio.toFixed(1)}</span>
+                  <span>{prod.nombre_tipo}</span>
+                  <span>Bs. {precioFormateado}</span>
 
                   <StockInput
                     type="number"
                     readOnly
-                    value={prod.stock_actual}
+                    value={prod.stock}
                     $peligro={stockBajo}
                   />
 
@@ -129,8 +176,6 @@ export function GestionStockPage() {
     </Container>
   );
 }
-
-/* STYLES */
 
 const Container = styled.div`
   display: flex;
@@ -222,14 +267,16 @@ const TablaBox = styled.div`
 `;
 
 const TablaHeader = styled.div`
+  font-size: 18px;
   display: grid;
   grid-template-columns: 2.2fr 1.7fr 1fr 0.8fr 1.2fr 1.4fr;
   padding: 8px 0;
   border-bottom: 1px solid black;
-  font-weight: 600;
+  font-weight: bold;
 `;
 
 const TablaBody = styled.div`
+  font-size: 18px;
   max-height: 55vh;
   overflow-y: auto;
 `;
@@ -240,25 +287,26 @@ const TablaRow = styled.div`
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
-  font-size: 14px;
 `;
 
 const StockInput = styled.input`
   width: 48px;
   text-align: center;
   border-radius: 4px;
-  border: 1px solid ${({ $peligro }) => ($peligro ? "red" : "black")};
-  background-color: ${({ $peligro }) => ($peligro ? "#ffecec" : "transparent")};
+  border: 4px solid black;
+  background-color: ${({ $peligro }) => ($peligro ? "red" : "transparent")};
   padding: 2px;
 `;
 
 const EstadoPill = styled.span`
+  font-size: 15px;
+  margin-right: 15px;
   display: inline-flex;
   justify-content: center;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 12px;
   border: 1px solid black;
+  font-weight: bold;
   background-color: ${({ $disponible }) => ($disponible ? "#555" : "#e4e4e4")};
   color: ${({ $disponible }) => ($disponible ? "white" : "black")};
 `;

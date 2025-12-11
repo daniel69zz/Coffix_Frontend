@@ -51,3 +51,30 @@ export async function actualizarPedido(id_pedido, estado) {
 
   return res.json();
 }
+
+export async function registrarPedido({ nombreCliente, montoPagado, items }) {
+  const body = {
+    nombreCliente: nombreCliente || null,
+    montoPagado,
+    items: items.map((it) => ({
+      idProducto: it.id_producto ?? it.id ?? it.idProducto,
+      cantidad: it.cantidad ?? it.qty ?? 1,
+    })),
+  };
+
+  const res = await fetch(API_PEDIDOS, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Error al registrar pedido");
+  }
+
+  return data;
+}
