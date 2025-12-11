@@ -206,37 +206,40 @@ export default function ProductosPage() {
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
 
   .EspacioModal {
-    background-color: #fff85a;
+    background-color: #fffbea;
     padding: 30px;
+    border-radius: 16px;
+    width: 720px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
   }
 `;
-
 const Container = styled.div`
   display: flex;
 
   input {
     margin: 15px 0;
-    border-radius: 5px;
-    padding: 2px 3px;
+    border-radius: 6px;
+    padding: 6px 8px;
     width: 100%;
-    border-width: 2px;
-    border-color: black;
+    border: 2px solid #000;
+    font-size: 15px;
   }
 
   .FirstPart {
-    border-radius: 10px;
+    border-radius: 14px;
     margin: 20px;
-    margin-right: 5px;
+    margin-right: 8px;
     background-color: white;
-    padding: 20px;
+    padding: 24px;
     flex: 0 0 70%;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 
     .ContainerButtons {
       margin: 18px 0;
@@ -246,57 +249,72 @@ const Container = styled.div`
   }
 
   .SecondPart {
-    border-radius: 10px;
+    border-radius: 14px;
     margin: 20px;
-    margin-left: 4px;
+    margin-left: 8px;
     background-color: white;
-    padding: 20px;
-
+    padding: 24px;
     flex: 0 0 27%;
     display: flex;
     flex-direction: column;
     max-height: 93vh;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 
     h4 {
       margin-top: 10px;
+      font-size: 18px;
+      font-weight: 700;
     }
 
+    /* CART LIST */
     .cart-list {
-      margin-top: 12px;
+      margin-top: 14px;
       flex: 1;
       overflow-y: auto;
       padding-right: 8px;
 
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: #999;
+      }
+
       .cart-item {
         width: 100%;
-        box-sizing: border-box;
-        padding: 4px;
+        padding: 10px;
         border-radius: 12px;
         background-color: #ffffff;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         margin-top: 12px;
 
         .cart-up {
           display: flex;
           align-items: center;
           gap: 16px;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
 
           .cart-image {
             width: 64px;
             height: 64px;
-            object-fit: cover;
             border-radius: 8px;
+            object-fit: cover;
           }
 
           .cart-target {
             .cart-title {
-              margin: 3px 0;
-              font-weight: 600;
+              margin: 2px 0;
+              font-weight: 700;
             }
             .cart-price {
               font-weight: bold;
-              margin: 4px 0 0;
+              margin-top: 4px;
               font-size: 18px;
               color: #4b5563;
             }
@@ -311,7 +329,7 @@ const Container = styled.div`
           font-weight: bold;
 
           .cant-input {
-            font-size: 17px;
+            font-size: 16px;
             width: 64px;
             padding: 4px 8px;
             border-radius: 8px;
@@ -320,21 +338,26 @@ const Container = styled.div`
 
           .remove-btn {
             margin-left: auto;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 8px;
-            border: none;
             background-color: #dc2626;
             color: white;
-            font-size: 18px;
+            border: none;
             cursor: pointer;
+            transition: 0.2s ease;
+
+            &:hover {
+              background-color: #b91c1c;
+            }
           }
         }
       }
     }
 
+    /* PAGO */
     .Pago {
       margin: 10px 0;
-      font-size: 23px;
+      font-size: 22px;
 
       .SubtotalTotal {
         display: flex;
@@ -350,51 +373,78 @@ const Container = styled.div`
       }
     }
 
+    /* Botones de pago */
     .BtnPago {
+      display: flex;
       gap: 20px;
       justify-content: center;
       padding: 10px;
-      display: flex;
 
       button {
-        border-style: solid;
         font-size: 20px;
-        margin-top: 5px;
-        padding: 10px;
+        padding: 10px 16px;
         background-color: #f7c22e;
         color: black;
-        font-weight: 600;
+        font-weight: 700;
         border-radius: 12px;
+        border: 1px solid #b48b12;
         cursor: pointer;
+        transition: 0.2s ease;
+
+        &:hover {
+          background-color: #ddb020;
+        }
       }
 
-      .clear:hover {
-        background-color: red;
+      .clear {
+        background: #ff3b3b;
+        border-color: #a80000;
+        color: white;
+
+        &:hover {
+          background-color: #cc0000;
+        }
       }
     }
   }
 `;
 
 const Button = styled.div`
-  padding: 5px;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: black;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 2px solid ${({ $activo }) => ($activo ? "black" : "#333")};
   font-size: 16px;
   cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s ease;
 
   background-color: ${({ $activo }) => ($activo ? "black" : "white")};
   color: ${({ $activo }) => ($activo ? "white" : "black")};
+
+  &:hover {
+    background-color: ${({ $activo }) => ($activo ? "#2c2c2c" : "#f2f2f2")};
+  }
 `;
 
 const Grid = styled.div`
   margin-top: 10px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 20px;
   width: 100%;
 
   max-height: 66vh;
   overflow-y: auto;
   padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #d1d1d1;
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
 `;

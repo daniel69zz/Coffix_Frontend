@@ -104,21 +104,27 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
 }
 
 const CardContainer = styled.div`
-  background: #d9d9d9;
+  background: #f5f5f5;
   border-radius: 12px;
-  padding: 10px 12px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+  padding: 16px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
-  color: #000;
+  font-size: 14px;
+  color: #222;
   box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
 `;
 
 const HeaderRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   font-size: 20px;
 `;
 
@@ -127,42 +133,56 @@ const Codigo = styled.span`
 `;
 
 const EstadoPill = styled.span`
-  font-size: 15px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
   font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid black;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  min-width: 90px;
+  text-align: center;
+  transition: background 0.3s, color 0.3s;
 
   background-color: ${({ $estado }) =>
     $estado === "Pendiente"
-      ? "#FF0000"
+      ? "#ffcccc"
       : $estado === "En preparacion"
-      ? "#66CCCC"
+      ? "#cce5ff"
       : $estado === "Listo"
-      ? "#33FF33"
-      : $estado === "Entregado"
-      ? "#999999"
-      : "#999999"};
+      ? "#d4edda"
+      : "#e0e0e0"};
 
   color: ${({ $estado }) =>
     $estado === "Pendiente"
-      ? "#000000"
+      ? "#b30000"
       : $estado === "En preparacion"
-      ? "#3333FF"
+      ? "#004085"
       : $estado === "Listo"
-      ? "#003300"
-      : "#000000"};
+      ? "#155724"
+      : "#555555"};
 `;
 
 const ItemsWrapper = styled.div`
   margin: 20px 0;
-  font-size: 20px;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 const ItemRow = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2px;
+  align-items: center;
+  padding: 6px 0;
+  border-radius: 6px;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
 
   span:first-child {
     font-weight: 600;
@@ -171,33 +191,38 @@ const ItemRow = styled.div`
 
 const Divider = styled.hr`
   border: none;
-  border-top: 1px solid #777;
-  margin: 6px 0;
+  border-top: 1px solid #ccc;
+  margin: 8px 0;
 `;
 
 const FooterRow = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 17px;
+  font-size: 16px;
   color: #555;
   font-weight: bold;
-  margin: 10px 0;
+  margin: 12px 0;
 `;
 
 const MarcarListoButton = styled.button`
   width: 100%;
-  padding: 6px 0;
-  border-radius: 4px;
+  padding: 8px 0;
+  border-radius: 8px;
   border: 1px solid #c9a000;
   background: #ffd54a;
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.5px;
   cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover:enabled {
+    background-color: #ffc107;
+  }
 
   &:disabled {
-    background: #cccccc;
-    border-color: #aaaaaa;
-    cursor: default;
+    background: #e0e0e0;
+    border-color: #cccccc;
+    cursor: not-allowed;
   }
 `;
