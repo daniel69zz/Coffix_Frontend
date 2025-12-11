@@ -1,4 +1,6 @@
-const API_PEDIDOS = "http://localhost:8080/api/pedidos";
+// const API_PEDIDOS = "http://localhost:8080/api/pedidos";
+const API_PEDIDOS =
+  "https://proyecto-sis-info-backend.onrender.com/api/pedidos";
 
 export async function getPedidos() {
   const res = await fetch(API_PEDIDOS);
