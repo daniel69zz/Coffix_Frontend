@@ -12,6 +12,8 @@ export default function PagoPage({
   onRegistrarPago,
 }) {
   const [efectivo, setEfectivo] = useState("");
+  const [descuento, setDescuento] = useState("");
+  const [tipoDescuento, setTipoDescuento] = useState("porcentaje"); // "porcentaje" o "monto"
   const [pagado, setPagado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,15 +26,59 @@ export default function PagoPage({
       return;
     }
 
-    // permite solo números y punto decimal
     const regex = /^\d*\.?\d*$/;
-    if (!regex.test(val)) return;
+    if (!regex.test(val)) {
+      return;
+    }
 
     setEfectivo(val);
   };
 
+  const handleDescuentoChange = (e) => {
+    const val = e.target.value;
+
+    if (val === "") {
+      setDescuento("");
+      return;
+    }
+
+    const regex = /^\d*\.?\d*$/;
+    if (!regex.test(val)) {
+      return;
+    }
+
+    // Validar límites según tipo de descuento
+    if (tipoDescuento === "porcentaje") {
+      const numVal = Number(val);
+      if (numVal > 100) {
+        setDescuento("100");
+        return;
+      }
+    } else if (tipoDescuento === "monto") {
+      const numVal = Number(val);
+      if (numVal > total) {
+        setDescuento(total.toString());
+        return;
+      }
+    }
+
+    setDescuento(val);
+  };
+
+  // Calcular descuento aplicado
+  const descuentoNum = descuento === "" ? 0 : Number(descuento);
+  let descuentoAplicado = 0;
+
+  if (tipoDescuento === "porcentaje" && descuentoNum > 0) {
+    descuentoAplicado = (total * descuentoNum) / 100;
+  } else if (tipoDescuento === "monto" && descuentoNum > 0) {
+    descuentoAplicado = descuentoNum;
+  }
+
+  // Calcular total con descuento
+  const totalConDescuento = Math.max(0, total - descuentoAplicado);
   const efectivoNum = efectivo === "" ? 0 : Number(efectivo);
-  const cambio = Math.max(0, efectivoNum - total);
+  const cambio = Math.max(0, efectivoNum - totalConDescuento);
 
   const handleRegistrarPago = async () => {
     const efectivoNum = efectivo === "" ? 0 : Number(efectivo);
@@ -42,32 +88,41 @@ export default function PagoPage({
       return;
     }
 
+    // Validar que el efectivo sea suficiente
+    if (efectivoNum < totalConDescuento) {
+      setError(
+        `Faltan $${(totalConDescuento - efectivoNum).toFixed(2)} en efectivo`
+      );
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
 
-      await registrarPedido({
+      const resp = await registrarPedido({
         nombreCliente,
         montoPagado: efectivoNum,
         items,
+        descuento: descuentoAplicado,
+        totalOriginal: total,
+        totalFinal: totalConDescuento,
+        tipoDescuento,
+        valorDescuento: descuentoNum,
       });
 
       setPagado(true);
 
-      if (onRegistrarPago) onRegistrarPago();
+      if (onRegistrarPago) {
+        onRegistrarPago();
+      }
     } catch (err) {
       console.error(err);
-      setError(err?.message || "Error al registrar el pedido");
+      setError(err.message || "Error al registrar el pedido");
     } finally {
       setLoading(false);
     }
   };
-
-  if (pagado) {
-    return (
-      <Message mensaje="PAGO REGISTRADO EXITOSAMENTE" onCancelar={onCancelar} />
-    );
-  }
 
   return (
     <Card>
@@ -78,42 +133,104 @@ export default function PagoPage({
       </LogoWrapper>
 
       <Content>
-        <FieldRow>
-          <Label>Total:</Label>
-          <Input readOnly value={Number(total).toFixed(2)} />
-        </FieldRow>
-
-        <FieldRow>
-          <Label>Efectivo:</Label>
-          <Input
-            type="text"
-            inputMode="decimal"
-            placeholder="0"
-            value={efectivo}
-            onChange={handleEfectivoChange}
+        {pagado ? (
+          <Message
+            mensaje="PAGO REGISTRADO EXITOSAMENTE"
+            onCancelar={onCancelar}
           />
-        </FieldRow>
+        ) : (
+          <>
+            <FieldRow>
+              <Label>Total Original:</Label>
+              <Input readOnly value={total.toFixed(2)} />
+            </FieldRow>
 
-        <FieldRow>
-          <Label>Cambio:</Label>
-          <Input readOnly value={cambio.toFixed(2)} />
-        </FieldRow>
+            <FieldRow>
+              <Label>Tipo Descuento:</Label>
+              <Select
+                value={tipoDescuento}
+                onChange={(e) => {
+                  setTipoDescuento(e.target.value);
+                  setDescuento(""); // Resetear descuento al cambiar tipo
+                }}
+              >
+                <option value="porcentaje">Porcentaje (%)</option>
+                <option value="monto">Monto Fijo ($)</option>
+              </Select>
+            </FieldRow>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+            <FieldRow>
+              <Label>
+                {tipoDescuento === "porcentaje"
+                  ? "Descuento %:"
+                  : "Descuento $:"}
+              </Label>
+              <Input
+                type="number"
+                min="0"
+                max={tipoDescuento === "porcentaje" ? "100" : total}
+                placeholder="0"
+                value={descuento}
+                onChange={handleDescuentoChange}
+              />
+            </FieldRow>
 
-        <ButtonsRow>
-          <CancelButton type="button" onClick={onCancelar} disabled={loading}>
-            CANCELAR
-          </CancelButton>
+            <FieldRow>
+              <Label>Descuento Aplicado:</Label>
+              <Input readOnly value={descuentoAplicado.toFixed(2)} />
+            </FieldRow>
 
-          <PrimaryButton
-            type="button"
-            onClick={handleRegistrarPago}
-            disabled={loading}
-          >
-            {loading ? "PROCESANDO..." : "REGISTRAR PAGO"}
-          </PrimaryButton>
-        </ButtonsRow>
+            <FieldRow>
+              <Label>Total con Descuento:</Label>
+              <Input
+                readOnly
+                value={totalConDescuento.toFixed(2)}
+                style={{
+                  fontWeight: "bold",
+                  backgroundColor: "#fff7d0",
+                  borderColor: "#ffd000",
+                }}
+              />
+            </FieldRow>
+
+            <FieldRow>
+              <Label>Efectivo:</Label>
+              <Input
+                type="number"
+                min="0"
+                placeholder="0"
+                value={efectivo}
+                onChange={handleEfectivoChange}
+              />
+            </FieldRow>
+
+            <FieldRow>
+              <Label>Cambio:</Label>
+              <Input readOnly value={cambio.toFixed(2)} />
+            </FieldRow>
+
+            {error && (
+              <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+            )}
+
+            <ButtonsRow>
+              <CancelButton
+                type="button"
+                onClick={onCancelar}
+                disabled={loading}
+              >
+                CANCELAR
+              </CancelButton>
+              <PrimaryButton
+                type="button"
+                onClick={handleRegistrarPago}
+                disabled={loading || efectivoNum < totalConDescuento}
+              >
+                {loading ? "PROCESANDO..." : "REGISTRAR PAGO"}
+              </PrimaryButton>
+            </ButtonsRow>
+          </>
+        )}
       </Content>
     </Card>
   );
@@ -150,7 +267,7 @@ const Content = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 `;
 
 const FieldRow = styled.div`
@@ -161,7 +278,7 @@ const FieldRow = styled.div`
 
 const Label = styled.span`
   font-weight: 700;
-  min-width: 110px;
+  min-width: 160px;
   text-align: right;
   font-size: 15px;
   color: #333;
@@ -183,10 +300,28 @@ const Input = styled.input`
   }
 `;
 
+const Select = styled.select`
+  flex: 1;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #b8b8b8;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:focus {
+    border-color: #ffaf00;
+    box-shadow: 0 0 6px rgba(255, 175, 0, 0.4);
+    outline: none;
+  }
+`;
+
 const ButtonsRow = styled.div`
   display: flex;
   gap: 24px;
-  margin-top: 32px;
+  margin-top: 20px;
 `;
 
 const BaseButton = styled.button`
@@ -204,51 +339,21 @@ const BaseButton = styled.button`
   &:hover {
     background: #e6b800;
   }
+
+  &:disabled {
+    background: #e1e1e1;
+    border-color: #b5b5b5;
+    cursor: not-allowed;
+  }
 `;
 
 const CancelButton = styled(BaseButton)`
   background: #e1e1e1;
   border-color: #b5b5b5;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #cfcfcf;
   }
 `;
 
 const PrimaryButton = styled(BaseButton)``;
-
-const SuccessWrapper = styled.div`
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  text-align: center;
-
-  button {
-    width: 50%;
-    font-size: 15px;
-    padding: 10px;
-    background-color: #f7c22e;
-    color: black;
-    font-weight: bold;
-    border-radius: 12px;
-    border: 1px solid #b48b12;
-    cursor: pointer;
-    transition: 0.2s ease;
-
-    &:hover {
-      background: #e4b020;
-    }
-  }
-
-  h2 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #333;
-  }
-
-  p {
-    font-size: 15px;
-    color: #444;
-  }
-`;
