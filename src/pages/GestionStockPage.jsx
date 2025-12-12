@@ -177,88 +177,107 @@ const Container = styled.div`
 
   input {
     margin: 15px 0;
-    border-radius: 5px;
-    padding: 2px 3px;
+    border-radius: 6px;
+    padding: 6px 10px;
     width: 100%;
-    border-width: 2px;
-    border-color: black;
+    border: 1.8px solid #444;
+    font-size: 15px;
   }
 
   .Stock {
-    border-radius: 10px;
+    border-radius: 12px;
     margin: 20px;
     margin-right: 5px;
-    background-color: white;
+    background-color: #ffffff;
     padding: 20px;
     width: 100%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 
     .ContainerButtons {
       margin: 18px 0;
       display: flex;
-      gap: 20px;
+      gap: 14px;
     }
   }
 
   h2 {
     font-size: 22px;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
+    font-weight: 700;
   }
 `;
 
 const TablaBox = styled.div`
   margin-top: 10px;
-  border-radius: 10px;
-  border: 1px solid black;
-  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1px solid #d2d2d2;
+  padding: 22px 24px;
+  background: #fafafa;
 
   h3 {
     margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 700;
   }
 `;
 
 const TablaHeader = styled.div`
-  font-size: 18px;
+  font-size: 17px;
   display: grid;
   grid-template-columns: 2.2fr 1.7fr 1fr 0.8fr 1.2fr 1.4fr;
-  padding: 8px 0;
-  border-bottom: 1px solid black;
-  font-weight: bold;
+  padding: 10px 4px;
+  border-bottom: 2px solid #444;
+  font-weight: 700;
 `;
 
 const TablaBody = styled.div`
-  font-size: 18px;
-  max-height: 320px;
+  font-size: 17px;
+  max-height: 350px;
   overflow-y: auto;
+  padding-right: 6px;
 `;
 
 const TablaRow = styled.div`
   display: grid;
   grid-template-columns: 2.2fr 1.7fr 1fr 0.8fr 1.2fr 1.4fr;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
+  padding: 10px 4px;
+  border-bottom: 1px solid #e1e1e1;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f5f5f5;
+  }
 `;
 
 const StockInput = styled.input`
-  width: 48px;
+  width: 60px;
   text-align: center;
-  border-radius: 4px;
-  border: 4px solid black;
-  background-color: ${({ $peligro }) => ($peligro ? "red" : "transparent")};
-  padding: 2px;
+  border-radius: 5px;
+  border: 2.5px solid #333;
+  background-color: ${({ $peligro }) => ($peligro ? "#ffb3b3" : "white")};
+  padding: 4px 6px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #222;
+    background-color: ${({ $peligro }) => ($peligro ? "#ff9e9e" : "#f7f7f7")};
+    outline: none;
+  }
 `;
 
 const EstadoPill = styled.span`
-  font-size: 15px;
-  margin-right: 15px;
   display: inline-flex;
   justify-content: center;
-  padding: 4px 10px;
+  align-items: center;
+  font-size: 14px;
+  padding: 5px 12px;
   border-radius: 999px;
-  border: 1px solid black;
-  font-weight: bold;
-  background-color: ${({ $disponible }) => ($disponible ? "#555" : "#e4e4e4")};
-  color: ${({ $disponible }) => ($disponible ? "white" : "black")};
+  border: 1px solid #333;
+  background-color: ${({ $disponible }) => ($disponible ? "#222" : "#e8e8e8")};
+  color: ${({ $disponible }) => ($disponible ? "white" : "#222")};
 `;
 
 const AccionCell = styled.div`
@@ -270,22 +289,33 @@ const RestockButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px solid black;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #333;
   background-color: white;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #ffe07c;
+  }
 `;
 
 const Button = styled.div`
-  padding: 5px;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: black;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid black;
   font-size: 16px;
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
 
   background-color: ${({ $activo }) => ($activo ? "black" : "white")};
   color: ${({ $activo }) => ($activo ? "white" : "black")};
+
+  &:hover {
+    background-color: ${({ $activo }) => ($activo ? "#222" : "#f5f5f5")};
+  }
 `;

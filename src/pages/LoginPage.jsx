@@ -72,61 +72,64 @@ const LeftBox = styled.div`
   background: white;
   padding: 40px;
   border-radius: 12px;
-  width: 330px;
-  height: 80%;
+  width: 360px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
-  label,
-  h2,
-  input {
-    background-color: white;
-  }
 
   h2 {
     text-align: center;
-    margin-bottom: 35px;
-  }
-
-  label {
-    font-size: 18px;
-    display: block;
-    margin-top: 15px;
+    margin-bottom: 25px;
+    font-size: 26px;
+    color: #333;
     font-weight: bold;
   }
 
+  label {
+    font-size: 16px;
+    margin-top: 12px;
+    font-weight: 600;
+    color: #444;
+  }
+
   input {
-    font-size: 18px;
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #999;
-    border-radius: 4px;
-    margin-bottom: 25px;
+    margin-top: 6px;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #c8c8c8;
+    outline: none;
+    transition: 0.2s;
+
+    &:focus {
+      border-color: #ff9900;
+      box-shadow: 0 0 5px rgba(255, 153, 0, 0.4);
+    }
   }
 
   button {
     width: 100%;
     padding: 10px;
     margin-top: 25px;
-    background: #f7c22e;
-    border: 1px solid #b48b12;
-    border-radius: 4px;
+    background: #ff9900;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
+    color: white;
+    font-size: 17px;
+    transition: 0.2s;
 
     &:hover {
-      background: #e4b020;
+      background: #e68a00;
     }
   }
 `;
 
 const RightPanel = styled.div`
   flex: 1.2;
-  background: #ff9900;
+  background: linear-gradient(135deg, #ff9900, #ffb84d);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -135,29 +138,26 @@ const RightPanel = styled.div`
   text-align: center;
 
   h1 {
-    background-color: inherit;
-    font-size: 35px;
-    line-height: 1.3;
-    max-width: 340px;
+    font-size: 42px;
+    margin-top: 20px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
   }
 `;
 
 const LogoCircle = styled.div`
-  height: 50%;
+  height: 390px;
+  width: 390px;
   border-radius: 50%;
+  background: #f8f7a9ff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 
   img {
-    background-color: #f7c22e;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+    width: 130%;
+    object-fit: contain;
   }
-`;
-
-const Logo = styled.span`
-  font-size: 120px;
 `;

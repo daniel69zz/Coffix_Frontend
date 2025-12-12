@@ -126,24 +126,23 @@ const Card = styled.div`
   padding: 32px 40px;
   display: flex;
   min-width: 600px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 `;
 
 const LogoWrapper = styled.div`
-  width: 70px;
-  height: 70px;
+  width: 75px;
+  height: 75px;
   border-radius: 50%;
+  background: #fff7d0;
   display: flex;
   align-items: center;
   justify-content: center;
 
   .imgContent {
     display: flex;
-    background-color: inherit;
-
     img {
-      height: 150px;
-      object-fit: cover;
-      background-color: inherit;
+      height: 130px;
+      object-fit: contain;
     }
   }
 `;
@@ -158,46 +157,99 @@ const Content = styled.div`
 const FieldRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 `;
 
 const Label = styled.span`
   font-weight: 700;
-  min-width: 90px;
+  min-width: 110px;
   text-align: right;
+  font-size: 15px;
+  color: #333;
 `;
 
 const Input = styled.input`
   flex: 1;
-  height: 48px;
-  padding: 0 10px;
-  border: 1px solid #000;
-  border-radius: 2px;
-  font-size: 14px;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #b8b8b8;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: 0.2s ease;
+
+  &:focus {
+    border-color: #ffaf00;
+    box-shadow: 0 0 6px rgba(255, 175, 0, 0.4);
+    outline: none;
+  }
 `;
 
 const ButtonsRow = styled.div`
   display: flex;
   gap: 24px;
-  margin-top: 40px;
+  margin-top: 32px;
 `;
 
 const BaseButton = styled.button`
   flex: 1;
-  height: 40px;
-  border-radius: 2px;
+  height: 44px;
+  border-radius: 6px;
   border: 1px solid #c79c00;
   background: #ffd000;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.5px;
   cursor: pointer;
+  transition: 0.2s ease;
 
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  &:hover {
+    background: #e6b800;
   }
 `;
 
-const CancelButton = styled(BaseButton)``;
+const CancelButton = styled(BaseButton)`
+  background: #e1e1e1;
+  border-color: #b5b5b5;
+
+  &:hover {
+    background: #cfcfcf;
+  }
+`;
+
 const PrimaryButton = styled(BaseButton)``;
+
+const SuccessWrapper = styled.div`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+
+  button {
+    width: 50%;
+    font-size: 15px;
+    padding: 10px;
+    background-color: #f7c22e;
+    color: black;
+    font-weight: bold;
+    border-radius: 12px;
+    border: 1px solid #b48b12;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    &:hover {
+      background: #e4b020;
+    }
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+  }
+
+  p {
+    font-size: 15px;
+    color: #444;
+  }
+`;

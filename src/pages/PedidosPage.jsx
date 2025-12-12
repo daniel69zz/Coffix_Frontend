@@ -88,42 +88,67 @@ export function PedidosPage() {
 const Container = styled.div`
   display: flex;
   margin-right: 10px;
+
   .Pedidos {
-    border-radius: 10px;
-    margin: 20px;
-    margin-right: 5px;
-    background-color: white;
-    padding: 20px;
+    margin: 20px 10px 20px 20px;
+    background: white;
+    padding: 24px;
+    border-radius: 14px;
     width: 100%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
 
     .ContainerButtons {
       margin: 18px 0;
       display: flex;
-      gap: 20px;
+      gap: 16px;
     }
 
     .PedidosC {
       margin-top: 10px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
       gap: 20px;
       width: 100%;
-
       max-height: 66vh;
       overflow-y: auto;
       padding-right: 8px;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f2f2f2;
+        border-radius: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: #a6a6a6;
+      }
     }
   }
 `;
-
 const Button = styled.div`
-  padding: 5px;
-  border-radius: 5px;
-  border-style: solid;
-  border-color: black;
-  font-size: 16px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 2px solid ${({ $activo }) => ($activo ? "black" : "#444")};
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  transition: 0.25s ease;
+  user-select: none;
 
   background-color: ${({ $activo }) => ($activo ? "black" : "white")};
   color: ${({ $activo }) => ($activo ? "white" : "black")};
+
+  &:hover {
+    background-color: ${({ $activo }) => ($activo ? "#2a2a2a" : "#f2f2f2")};
+  }
 `;
