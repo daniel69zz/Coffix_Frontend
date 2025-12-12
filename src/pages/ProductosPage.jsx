@@ -114,7 +114,7 @@ export default function ProductosPage() {
         </div>
 
         <div className="SecondPart">
-          <h2>REGISTRAR PEDIDO Y PAGO</h2>
+          <h2>REGISTRO DE PEDIDO Y PAGO</h2>
           <h4>Nombre del Cliente (opcional)</h4>
           <input
             type="text"
