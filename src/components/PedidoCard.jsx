@@ -49,7 +49,7 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
     if (!next) return;
 
     try {
-      const actualizado = await actualizarPedido(ped.id_pedido, next);
+      await actualizarPedido(ped.id_pedido, next);
 
       if (onEstadoActualizado) {
         onEstadoActualizado(`Pedido ${ped.cod_pedido} actualizado a "${next}"`);
@@ -63,10 +63,33 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
   const buttonLabel = getButtonLabel(ped.estado);
   const isDisabled = getNextEstado(ped.estado) === null;
 
+  // Intentamos obtener la prioridad desde distintas formas posibles
+  let prioridadLabel =
+    ped?.prioridadLabel ?? ped?.prioridad_label ?? ped?.prioridadlabel ?? null;
+
+  if (!prioridadLabel && ped?.prioridad != null) {
+    if (typeof ped.prioridad === "number") {
+      prioridadLabel = `P${ped.prioridad}`;
+    } else if (
+      typeof ped.prioridad === "string" &&
+      ped.prioridad.trim() !== ""
+    ) {
+      prioridadLabel = ped.prioridad.trim();
+    }
+  }
+
   return (
     <CardContainer>
       <HeaderRow>
-        <Codigo>{ped.cod_pedido}</Codigo>
+        <CodigoBlock>
+          <Codigo>{ped.cod_pedido}</Codigo>
+
+          {prioridadLabel && (
+            <PrioridadText $prioridad={prioridadLabel}>
+              Prioridad: {prioridadLabel}
+            </PrioridadText>
+          )}
+        </CodigoBlock>
 
         <EstadoPill $estado={ped.estado}>{ped.estado}</EstadoPill>
       </HeaderRow>
@@ -123,13 +146,32 @@ const CardContainer = styled.div`
 const HeaderRow = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* ✅ para que el pill quede arriba si hay 2 líneas */
   margin-bottom: 12px;
-  font-size: 20px;
+`;
+
+const CodigoBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const Codigo = styled.span`
   font-weight: 700;
+  font-size: 20px;
+`;
+
+const PrioridadText = styled.span`
+  font-size: 18px;
+  font-weight: 700;
+  color: ${({ $prioridad }) =>
+    $prioridad === "Alta"
+      ? "#b30000"
+      : $prioridad === "Media"
+      ? "#004085"
+      : $prioridad === "Baja"
+      ? "#155724"
+      : "#555555"};
 `;
 
 const EstadoPill = styled.span`

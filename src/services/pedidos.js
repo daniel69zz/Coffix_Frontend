@@ -38,6 +38,18 @@ export async function filtrarPedidos(estado) {
   return res.json();
 }
 
+export async function buscarPedidosPorCodigo(codigo) {
+  const url = `${API_PEDIDOS}/buscar?codigo=${encodeURIComponent(codigo)}`;
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Error al buscar pedidos por código");
+  }
+
+  return res.json();
+}
+
 export async function actualizarPedido(id_pedido, estado) {
   const url = `${API_PEDIDOS}/${id_pedido}/estado/${encodeURIComponent(
     estado

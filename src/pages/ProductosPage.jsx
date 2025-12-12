@@ -173,9 +173,7 @@ export default function ProductosPage() {
           </div>
 
           <div className="BtnPago">
-            <button onClick={() => setMostrandoPago(true)}>
-              Procesar Pago
-            </button>
+            <button onClick={() => setMostrandoPago(true)}>REGISTRAR</button>
 
             <button className="clear" onClick={clearCart}>
               Vaciar carrito

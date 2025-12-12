@@ -1,5 +1,9 @@
 import styled from "styled-components";
-import { getEstados, filtrarPedidos } from "../services/pedidos";
+import {
+  getEstados,
+  filtrarPedidos,
+  buscarPedidosPorCodigo,
+} from "../services/pedidos";
 import { useEffect, useState } from "react";
 import PedidoCard from "../components/PedidoCard";
 import { Message } from "../utils/Message";
@@ -9,6 +13,8 @@ export function PedidosPage() {
   const [pedidosFiltrados, setPedidosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [searchCodigo, setSearchCodigo] = useState("");
 
   const [showMessage, setShowMessage] = useState(false);
   const [mensaje, setMensaje] = useState("");
@@ -46,10 +52,47 @@ export function PedidosPage() {
     setShowMessage(true);
   };
 
+  const handleBuscarPorCodigo = async () => {
+    const valor = searchCodigo.trim();
+
+    if (!valor) {
+      recargarPedidos();
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await buscarPedidosPorCodigo(valor);
+      setPedidosFiltrados(data);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Error al buscar pedidos por código");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container>
       <div className="Pedidos">
         <h2>GESTION DE PEDIDOS</h2>
+
+        <div className="SearchContainer">
+          <input
+            className="SearchInput"
+            type="text"
+            placeholder="Buscar pedido por código..."
+            value={searchCodigo}
+            onChange={(e) => setSearchCodigo(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleBuscarPorCodigo();
+              }
+            }}
+          />
+        </div>
 
         {showMessage && (
           <Message mensaje={mensaje} onCancelar={() => setShowMessage(false)} />
@@ -98,6 +141,24 @@ const Container = styled.div`
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     display: flex;
     flex-direction: column;
+
+    .SearchContainer {
+      margin: 10px 0 16px 0;
+    }
+
+    .SearchInput {
+      width: 100%;
+      max-width: 360px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .SearchInput:focus {
+      border-color: #000;
+    }
 
     .ContainerButtons {
       margin: 18px 0;
