@@ -8,21 +8,25 @@ const linksArray = [
     label: "Productos",
     Icon: FaShoppingCart,
     to: "ventas",
+    roles: ["ADMIN", "CAJERO"],
   },
   {
     label: "Pedidos",
     Icon: FaClipboardList,
     to: "pedidos",
+    roles: ["ADMIN", "CAJERO", "COCINA"],
   },
   {
     label: "Reportes",
     Icon: GiHistogram,
     to: "reporte",
+    roles: ["ADMIN"],
   },
   {
     label: "Restock",
     Icon: BsFillBoxSeamFill,
     to: "restock",
+    roles: ["ADMIN"],
   },
 ];
 

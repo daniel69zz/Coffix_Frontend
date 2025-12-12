@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../services/AuthContext";
 import { useState } from "react";
+import { firstAllowedPath } from "../utils/role";
 
 export default function Login() {
   const { login } = useAuth();
@@ -16,8 +17,8 @@ export default function Login() {
     setError("");
 
     try {
-      await login(usuario, password);
-      navigate("/main/ventas");
+      const data = await login(usuario, password);
+      navigate(firstAllowedPath(data.rol), { replace: true });
     } catch (err) {
       setError(err.message || "Error al iniciar sesión");
     }

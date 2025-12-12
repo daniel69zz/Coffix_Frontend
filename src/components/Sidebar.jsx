@@ -1,24 +1,36 @@
 import styled from "styled-components";
 import { AiOutlineLeft } from "react-icons/ai";
-
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { IoLogOut } from "react-icons/io5";
 import logo from "/logo_sis_v3.png";
 
 import links_sidebar from "./data_aux";
+import { useAuth } from "../services/AuthContext";
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
   const ModSidebaropen = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  const links_1 = links_sidebar();
+  const rol = user?.rol || localStorage.getItem("rol") || "CAJERO";
+
+  const linksFiltrados = links_sidebar().filter((l) => l.roles.includes(rol));
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <Container $isOpen={sidebarOpen}>
       <button onClick={ModSidebaropen} className="SidebarButton">
         <AiOutlineLeft />
       </button>
+
       <div className="LogoContent">
         <div className="imgContent">
           <img src={logo} alt="logo coffix" />
@@ -26,7 +38,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         <h2>COFFIX</h2>
       </div>
 
-      {links_1.map(({ Icon, label, to }) => (
+      {linksFiltrados.map(({ Icon, label, to }) => (
         <div className="LinkContainer" key={label}>
           <NavLink
             to={to}
@@ -39,10 +51,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
           </NavLink>
         </div>
       ))}
+
       <Divider />
+
       <div className="LinkContainer">
+        {/* ✅ Salir real: llama logout() */}
         <NavLink
-          to="/"
+          to="/login"
+          onClick={handleLogout}
           className={({ isActive }) => `Links${isActive ? ` active` : ``}`}
         >
           <div className="Linkicon">

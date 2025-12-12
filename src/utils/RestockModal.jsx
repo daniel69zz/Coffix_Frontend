@@ -106,7 +106,7 @@ export default function RestockModal({ producto, onCancelar, onActualizado }) {
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6); /* fondo más elegante */
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;

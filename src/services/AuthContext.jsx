@@ -7,37 +7,33 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
-  const API_PEDIDOS = "http://localhost:8080/auth/login";
-  // const API_PEDIDOS =
-  //   "https://proyecto-sis-info-backend.onrender.com/auth/login";
+
+  // const API_LOGIN = "http://localhost:8080/auth/login";
+  const API_LOGIN = "https://proyecto-sis-info-backend.onrender.com/auth/login";
 
   const login = async (user, password) => {
-    console.log("hola");
-    const resp = await fetch(API_PEDIDOS, {
+    const resp = await fetch(API_LOGIN, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user, password }),
     });
 
-    if (!resp.ok) {
-      throw new Error("Credenciales inválidas");
-    }
+    if (!resp.ok) throw new Error("Credenciales inválidas");
 
     const data = await resp.json();
+    // data = { id_usuario, password, rol, usuario }
 
     setUser(data);
     localStorage.setItem("user", JSON.stringify(data));
+    localStorage.setItem("rol", data.rol);
 
-    console.log(data);
     return data;
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
-    // aquí podrías llamar a /auth/logout si tu backend tuviera uno
+    localStorage.removeItem("rol");
   };
 
   return (

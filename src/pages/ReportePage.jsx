@@ -32,7 +32,6 @@ export function ReportePage() {
     }
   };
 
-  // 🔹 Agrupamos las ventas por fecha y calculamos el total de cada día
   const gruposPorFecha = useMemo(() => {
     const map = new Map();
 
@@ -51,7 +50,7 @@ export function ReportePage() {
     });
 
     return Array.from(map.values()).sort((a, b) => {
-      // fechas vienen como dd/MM/yyyy
+      // dd/MM/yyyy
       const [da, ma, ya] = a.fecha.split("/");
       const [db, mb, yb] = b.fecha.split("/");
       const fa = new Date(`${ya}-${ma}-${da}`);
@@ -130,7 +129,6 @@ export function ReportePage() {
                 <GrupoDia key={grupo.fecha}>
                   {idxGrupo > 0 && <hr />}
 
-                  {/* Encabezado del día con total del día */}
                   <GrupoHeaderRow>
                     <GrupoFecha>{grupo.fecha}</GrupoFecha>
                     <GrupoTotal>

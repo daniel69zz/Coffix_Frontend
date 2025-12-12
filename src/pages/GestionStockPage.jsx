@@ -5,17 +5,15 @@ import { Message } from "../utils/Message";
 import RestockModal from "../utils/RestockModal"; // 👈 default import
 
 export function GestionStockPage() {
-  // igual que ProductosPage: 0 = "Todos"
+  //0 = "Todos"
   const [btnactive, setBtnactive] = useState(0);
   const [busqueda, setBusqueda] = useState("");
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // producto seleccionado para restock
   const [productoRestock, setProductoRestock] = useState(null);
 
-  // mensaje de éxito estilo modal
   const [showMessage, setShowMessage] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -42,12 +40,12 @@ export function GestionStockPage() {
     cargarProductos();
   }, [btnactive]);
 
-  // abrir el modal de restock para el producto seleccionado
+  // modal de restock
   const onRestock = (prod) => {
     setProductoRestock(prod);
   };
 
-  // lo que pasa cuando el modal termina de actualizar bien
+  //  modal message
   const handleRestockActualizado = () => {
     setProductoRestock(null);
     cargarProductos();
@@ -76,7 +74,6 @@ export function GestionStockPage() {
       <div className="Stock">
         <h2>GESTION DE STOCK</h2>
 
-        {/* 🧊 Modal para actualizar stock */}
         {productoRestock && (
           <RestockModal
             producto={productoRestock}
@@ -85,7 +82,6 @@ export function GestionStockPage() {
           />
         )}
 
-        {/* ✅ Mensaje de éxito */}
         {showMessage && (
           <Message mensaje={mensaje} onCancelar={() => setShowMessage(false)} />
         )}

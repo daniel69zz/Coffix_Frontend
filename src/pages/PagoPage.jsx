@@ -63,7 +63,6 @@ export default function PagoPage({
     }
   };
 
-  // ✅ Cuando pagado = true: NO se renderiza nada más, solo el overlay Message
   if (pagado) {
     return (
       <Message mensaje="PAGO REGISTRADO EXITOSAMENTE" onCancelar={onCancelar} />
