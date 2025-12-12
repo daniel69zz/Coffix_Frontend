@@ -7,9 +7,9 @@ export function AuthProvider({ children }) {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
-  // const API_PEDIDOS = "http://localhost:8080/auth/login";
-  const API_PEDIDOS =
-    "https://proyecto-sis-info-backend.onrender.com/auth/login";
+  const API_PEDIDOS = "http://localhost:8080/auth/login";
+  // const API_PEDIDOS =
+  //   "https://proyecto-sis-info-backend.onrender.com/auth/login";
 
   const login = async (user, password) => {
     console.log("hola");

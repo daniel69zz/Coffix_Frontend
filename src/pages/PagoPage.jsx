@@ -24,10 +24,9 @@ export default function PagoPage({
       return;
     }
 
+    // permite solo números y punto decimal
     const regex = /^\d*\.?\d*$/;
-    if (!regex.test(val)) {
-      return;
-    }
+    if (!regex.test(val)) return;
 
     setEfectivo(val);
   };
@@ -47,26 +46,29 @@ export default function PagoPage({
       setLoading(true);
       setError(null);
 
-      const resp = await registrarPedido({
+      await registrarPedido({
         nombreCliente,
         montoPagado: efectivoNum,
         items,
       });
 
-      // console.log("Respuesta API:", resp);
-
       setPagado(true);
 
-      if (onRegistrarPago) {
-        onRegistrarPago();
-      }
+      if (onRegistrarPago) onRegistrarPago();
     } catch (err) {
       console.error(err);
-      setError(err.message || "Error al registrar el pedido");
+      setError(err?.message || "Error al registrar el pedido");
     } finally {
       setLoading(false);
     }
   };
+
+  // ✅ Cuando pagado = true: NO se renderiza nada más, solo el overlay Message
+  if (pagado) {
+    return (
+      <Message mensaje="PAGO REGISTRADO EXITOSAMENTE" onCancelar={onCancelar} />
+    );
+  }
 
   return (
     <Card>
@@ -77,50 +79,42 @@ export default function PagoPage({
       </LogoWrapper>
 
       <Content>
-        {pagado ? (
-          <Message
-            mensaje="PAGO REGISTRADO EXITOSAMENTE"
-            onCancelar={onCancelar}
+        <FieldRow>
+          <Label>Total:</Label>
+          <Input readOnly value={Number(total).toFixed(2)} />
+        </FieldRow>
+
+        <FieldRow>
+          <Label>Efectivo:</Label>
+          <Input
+            type="text"
+            inputMode="decimal"
+            placeholder="0"
+            value={efectivo}
+            onChange={handleEfectivoChange}
           />
-        ) : (
-          <>
-            <FieldRow>
-              <Label>Total:</Label>
-              <Input readOnly value={total.toFixed(2)} />
-            </FieldRow>
-            <FieldRow>
-              <Label>Efectivo:</Label>
-              <Input
-                type="number"
-                min="0"
-                placeholder="0"
-                value={efectivo}
-                onChange={handleEfectivoChange}
-              />
-            </FieldRow>
-            <FieldRow>
-              <Label>Cambio:</Label>
-              <Input readOnly value={cambio.toFixed(2)} />
-            </FieldRow>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <ButtonsRow>
-              <CancelButton
-                type="button"
-                onClick={onCancelar}
-                disabled={loading}
-              >
-                CANCELAR
-              </CancelButton>
-              <PrimaryButton
-                type="button"
-                onClick={handleRegistrarPago}
-                disabled={loading}
-              >
-                {loading ? "PROCESANDO..." : "REGISTRAR PAGO"}
-              </PrimaryButton>
-            </ButtonsRow>
-          </>
-        )}
+        </FieldRow>
+
+        <FieldRow>
+          <Label>Cambio:</Label>
+          <Input readOnly value={cambio.toFixed(2)} />
+        </FieldRow>
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
+        <ButtonsRow>
+          <CancelButton type="button" onClick={onCancelar} disabled={loading}>
+            CANCELAR
+          </CancelButton>
+
+          <PrimaryButton
+            type="button"
+            onClick={handleRegistrarPago}
+            disabled={loading}
+          >
+            {loading ? "PROCESANDO..." : "REGISTRAR PAGO"}
+          </PrimaryButton>
+        </ButtonsRow>
       </Content>
     </Card>
   );
@@ -145,6 +139,7 @@ const LogoWrapper = styled.div`
   .imgContent {
     display: flex;
     background-color: inherit;
+
     img {
       height: 150px;
       object-fit: cover;
@@ -197,36 +192,12 @@ const BaseButton = styled.button`
   font-weight: 600;
   letter-spacing: 0.5px;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 `;
 
 const CancelButton = styled(BaseButton)``;
 const PrimaryButton = styled(BaseButton)``;
-
-const SuccessWrapper = styled.div`
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  button {
-    width: 50%;
-    border-style: solid;
-    font-size: 15px;
-    margin-top: 5px;
-    padding: 10px;
-    background-color: #f7c22e;
-    color: black;
-    font-weight: bold;
-    border-radius: 12px;
-    cursor: pointer;
-  }
-
-  h2 {
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  p {
-    font-size: 14px;
-  }
-`;
