@@ -41,6 +41,14 @@ export default function Login() {
 
   const handleSendRecoveryEmail = async () => {
     const email = correoRecuperacion.trim();
+    const username = usuario.trim();
+
+    if (!username) {
+      setForgotMessage(
+        "Ingrese primero su usuario en el formulario de inicio de sesión"
+      );
+      return;
+    }
 
     if (!email) {
       setForgotMessage("Ingrese el correo para recuperar la contraseña");
@@ -51,8 +59,9 @@ export default function Login() {
       setForgotLoading(true);
       setForgotMessage("Verificando usuario...");
 
+      // Importante: el backend valida por nombre de usuario, no por correo
       const url = `http://localhost:8080/auth/exists?user=${encodeURIComponent(
-        email
+        username
       )}`;
       const res = await fetch(url);
 
@@ -60,7 +69,9 @@ export default function Login() {
         throw new Error("Error al verificar usuario");
       }
 
-      const exists = await res.json();
+      // El endpoint devuelve únicamente true/false; lo convertimos explícitamente a booleano
+      const raw = (await res.text()).trim().toLowerCase();
+      const exists = raw === "true" || raw === "1";
 
       if (!exists) {
         setForgotMessage(
@@ -70,7 +81,7 @@ export default function Login() {
       }
 
       try {
-        await enviarCorreoAviso({ correo: email, nombre: email });
+        await enviarCorreoAviso({ correo: email, nombre: username });
         setForgotMessage("Se ha enviado una contraseña nueva a su correo");
       } catch (err) {
         console.error(err);

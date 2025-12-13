@@ -1,6 +1,6 @@
-const API_PRODUCTOS = "http://localhost:8080/api/productos";
-// const API_PRODUCTOS =
-//   "https://proyecto-sis-info-backend.onrender.com/api/productos";
+// const API_PRODUCTOS = "http://localhost:8080/api/productos";
+const API_PRODUCTOS =
+  "https://proyecto-sis-info-backend.onrender.com/api/productos";
 
 export async function getProductos() {
   const res = await fetch(API_PRODUCTOS);

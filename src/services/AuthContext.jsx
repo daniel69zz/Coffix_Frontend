@@ -8,8 +8,8 @@ export function AuthProvider({ children }) {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const API_LOGIN = "http://localhost:8080/auth/login";
-  // const API_LOGIN = "https://proyecto-sis-info-backend.onrender.com/auth/login";
+  // const API_LOGIN = "http://localhost:8080/auth/login";
+  const API_LOGIN = "https://proyecto-sis-info-backend.onrender.com/auth/login";
 
   const login = async (user, password) => {
     const resp = await fetch(API_LOGIN, {

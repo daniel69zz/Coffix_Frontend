@@ -1,6 +1,6 @@
-const API_REPORTES = "http://localhost:8080/api/reportes";
-// const API_REPORTES =
-//   "https://proyecto-sis-info-backend.onrender.com/api/reportes";
+// const API_REPORTES = "http://localhost:8080/api/reportes";
+const API_REPORTES =
+  "https://proyecto-sis-info-backend.onrender.com/api/reportes";
 
 export async function getReporteVentas(fechaInicio, fechaFin) {
   const params = new URLSearchParams({
