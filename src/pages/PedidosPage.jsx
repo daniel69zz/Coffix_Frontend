@@ -132,6 +132,9 @@ const Container = styled.div`
   display: flex;
   margin-right: 10px;
 
+  height: 100vh;
+  overflow: hidden;
+
   .Pedidos {
     margin: 20px 10px 20px 20px;
     background: white;

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { getCategorias, filtrarProductos } from "../services/productos";
 import { Message } from "../utils/Message";
-import RestockModal from "../utils/RestockModal"; // 👈 default import
+import RestockModal from "../utils/RestockModal";
 
 export function GestionStockPage() {
   //0 = "Todos"
@@ -109,19 +109,19 @@ export function GestionStockPage() {
         <TablaBox>
           <h3>{tituloTabla}</h3>
 
-          <TablaHeader>
+          <div className="TabHeader">
             <span>Nombre</span>
             <span>Categoria</span>
             <span>Precio</span>
             <span>Stock</span>
             <span>Estado</span>
             <span>Acción</span>
-          </TablaHeader>
+          </div>
 
           {loading && <p>Cargando productos...</p>}
           {error && <p>Error: {error}</p>}
 
-          <TablaBody>
+          <div className="TabBody">
             {productosFiltrados.map((prod) => {
               const disponible = prod.stock > 0;
               const stockBajo = prod.stock <= 10;
@@ -132,35 +132,32 @@ export function GestionStockPage() {
                   : prod.precio;
 
               return (
-                <TablaRow key={prod.id_producto}>
+                <TabRow key={prod.id_producto}>
                   <span>{prod.nombre}</span>
                   <span>{prod.nombre_tipo}</span>
                   <span>Bs. {precioFormateado}</span>
 
-                  <StockInput
+                  <input
                     type="number"
                     readOnly
                     value={prod.stock}
                     $peligro={stockBajo}
                   />
 
-                  <EstadoPill $disponible={disponible}>
+                  <Span $disponible={disponible}>
                     {disponible ? "Disponible" : "No Disponible"}
-                  </EstadoPill>
+                  </Span>
 
-                  <AccionCell>
-                    <RestockButton
-                      type="button"
-                      onClick={() => onRestock(prod)}
-                    >
+                  <div className="Actions">
+                    <button type="button" onClick={() => onRestock(prod)}>
                       <span>📦</span>
                       <span>Restock</span>
-                    </RestockButton>
-                  </AccionCell>
-                </TablaRow>
+                    </button>
+                  </div>
+                </TabRow>
               );
             })}
-          </TablaBody>
+          </div>
         </TablaBox>
       </div>
     </Container>
@@ -170,6 +167,8 @@ export function GestionStockPage() {
 const Container = styled.div`
   display: flex;
   margin-right: 10px;
+
+  height: 100vh;
 
   input {
     margin: 15px 0;
@@ -188,6 +187,10 @@ const Container = styled.div`
     padding: 20px;
     width: 100%;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 
     .ContainerButtons {
       margin: 18px 0;
@@ -210,30 +213,35 @@ const TablaBox = styled.div`
   padding: 22px 24px;
   background: #fafafa;
 
+  max-height: calc(100vh - 220px);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
   h3 {
     margin-bottom: 16px;
     font-size: 20px;
     font-weight: 700;
   }
+
+  .TabHeader {
+    font-size: 17px;
+    display: grid;
+    grid-template-columns: 2.2fr 1.7fr 1fr 0.8fr 1.2fr 1.4fr;
+    padding: 10px 4px;
+    border-bottom: 2px solid #444;
+    font-weight: 700;
+  }
+
+  .TabBody {
+    font-size: 17px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 6px;
+  }
 `;
 
-const TablaHeader = styled.div`
-  font-size: 17px;
-  display: grid;
-  grid-template-columns: 2.2fr 1.7fr 1fr 0.8fr 1.2fr 1.4fr;
-  padding: 10px 4px;
-  border-bottom: 2px solid #444;
-  font-weight: 700;
-`;
-
-const TablaBody = styled.div`
-  font-size: 17px;
-  max-height: 350px;
-  overflow-y: auto;
-  padding-right: 6px;
-`;
-
-const TablaRow = styled.div`
+const TabRow = styled.div`
   display: grid;
   grid-template-columns: 2.2fr 1.7fr 1fr 0.8fr 1.2fr 1.4fr;
   align-items: center;
@@ -244,27 +252,50 @@ const TablaRow = styled.div`
   &:hover {
     background: #f5f5f5;
   }
-`;
 
-const StockInput = styled.input`
-  width: 60px;
-  text-align: center;
-  border-radius: 5px;
-  border: 2.5px solid #333;
-  background-color: ${({ $peligro }) => ($peligro ? "#ffb3b3" : "white")};
-  padding: 4px 6px;
-  font-size: 16px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  input {
+    width: 60px;
+    text-align: center;
+    border-radius: 5px;
+    border: 2.5px solid #333;
+    background-color: ${({ $peligro }) => ($peligro ? "#ffb3b3" : "white")};
+    padding: 4px 6px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
 
-  &:focus {
-    border-color: #222;
-    background-color: ${({ $peligro }) => ($peligro ? "#ff9e9e" : "#f7f7f7")};
-    outline: none;
+    &:focus {
+      border-color: #222;
+      background-color: ${({ $peligro }) => ($peligro ? "#ff9e9e" : "#f7f7f7")};
+      outline: none;
+    }
+  }
+
+  .Actions {
+    display: flex;
+    justify-content: flex-start;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #333;
+      background-color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #ffe07c;
+      }
+    }
   }
 `;
 
-const EstadoPill = styled.span`
+const Span = styled.span`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -274,29 +305,6 @@ const EstadoPill = styled.span`
   border: 1px solid #333;
   background-color: ${({ $disponible }) => ($disponible ? "#222" : "#e8e8e8")};
   color: ${({ $disponible }) => ($disponible ? "white" : "#222")};
-`;
-
-const AccionCell = styled.div`
-  display: flex;
-  justify-content: flex-start;
-`;
-
-const RestockButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 16px;
-  border-radius: 8px;
-  border: 1.5px solid #333;
-  background-color: white;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #ffe07c;
-  }
 `;
 
 const Button = styled.div`

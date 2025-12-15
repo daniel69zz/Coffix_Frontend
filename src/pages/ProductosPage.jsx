@@ -221,6 +221,9 @@ const Overlay = styled.div`
 const Container = styled.div`
   display: flex;
 
+  height: 100vh;
+  overflow: hidden;
+
   input {
     margin: 15px 0;
     border-radius: 6px;
@@ -431,7 +434,7 @@ const Grid = styled.div`
   gap: 20px;
   width: 100%;
 
-  max-height: 66vh;
+  max-height: 60vh;
   overflow-y: auto;
   padding-right: 8px;
 
