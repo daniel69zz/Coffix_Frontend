@@ -1,45 +1,10 @@
 import styled from "styled-components";
 import { actualizarPedido } from "../services/pedidos";
-
-function formatearHora(fc_hora) {
-  if (!fc_hora) return "";
-
-  const partes = fc_hora.split("T");
-  if (partes.length === 2) {
-    return partes[1].substring(0, 5);
-  }
-
-  return fc_hora;
-}
-
-function getNextEstado(estado) {
-  switch (estado) {
-    case "Pendiente":
-      return "En preparacion";
-    case "En preparacion":
-      return "Listo";
-    case "Listo":
-      return "Entregado";
-    case "Entregado":
-    default:
-      return null;
-  }
-}
-
-function getButtonLabel(estado) {
-  switch (estado) {
-    case "Pendiente":
-      return "MARCAR EN PREPARACIÓN";
-    case "En preparacion":
-      return "MARCAR LISTO";
-    case "Listo":
-      return "MARCAR ENTREGADO";
-    case "Entregado":
-      return "PEDIDO ENTREGADO";
-    default:
-      return "ACTUALIZAR ESTADO";
-  }
-}
+import {
+  formatearHora,
+  getNextEstado,
+  getButtonLabel,
+} from "../utils/fn_utils";
 
 export default function PedidoCard({ ped, onEstadoActualizado }) {
   const handleClick = async (e) => {
@@ -63,9 +28,7 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
   const buttonLabel = getButtonLabel(ped.estado);
   const isDisabled = getNextEstado(ped.estado) === null;
 
-  // Intentamos obtener la prioridad desde distintas formas posibles
-  let prioridadLabel =
-    ped?.prioridadLabel ?? ped?.prioridad_label ?? ped?.prioridadlabel ?? null;
+  let prioridadLabel = ped?.prioridadLabel ?? null;
 
   if (!prioridadLabel && ped?.prioridad != null) {
     if (typeof ped.prioridad === "number") {
@@ -79,25 +42,25 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
   }
 
   return (
-    <CardContainer>
-      <HeaderRow>
-        <CodigoBlock>
-          <Codigo>{ped.cod_pedido}</Codigo>
+    <Container>
+      <div className="HeaderCard">
+        <div className="CodeCard">
+          <span className="CodeSpan">{ped.cod_pedido}</span>
 
           {prioridadLabel && (
-            <PrioridadText $prioridad={prioridadLabel}>
+            <PrioridadSpan $prioridad={prioridadLabel}>
               Prioridad: {prioridadLabel}
-            </PrioridadText>
+            </PrioridadSpan>
           )}
-        </CodigoBlock>
+        </div>
 
-        <EstadoPill $estado={ped.estado}>{ped.estado}</EstadoPill>
-      </HeaderRow>
+        <EstadoSpan $estado={ped.estado}>{ped.estado}</EstadoSpan>
+      </div>
 
       {Array.isArray(ped.detalles) && ped.detalles.length > 0 && (
-        <ItemsWrapper>
+        <Items>
           {ped.detalles.map((it, idx) => (
-            <ItemRow key={idx}>
+            <div className="ItemRow" key={idx}>
               <span>
                 {it.cantidad}x {it.producto.nombre}
               </span>
@@ -107,9 +70,9 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
                   ? it.producto.precio.toFixed(2)
                   : it.producto.precio}
               </span>
-            </ItemRow>
+            </div>
           ))}
-        </ItemsWrapper>
+        </Items>
       )}
 
       <Divider />
@@ -119,14 +82,14 @@ export default function PedidoCard({ ped, onEstadoActualizado }) {
         <span>{formatearHora(ped.fc_hora)}</span>
       </FooterRow>
 
-      <MarcarListoButton disabled={isDisabled} onClick={handleClick}>
+      <ListButton disabled={isDisabled} onClick={handleClick}>
         {buttonLabel}
-      </MarcarListoButton>
-    </CardContainer>
+      </ListButton>
+    </Container>
   );
 }
 
-const CardContainer = styled.div`
+const Container = styled.div`
   background: #f5f5f5;
   border-radius: 12px;
   padding: 16px 20px;
@@ -141,27 +104,27 @@ const CardContainer = styled.div`
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   }
+
+  .HeaderCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+
+    .CodeCard {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .CodeSpan {
+        font-weight: 700;
+        font-size: 20px;
+      }
+    }
+  }
 `;
 
-const HeaderRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start; /* ✅ para que el pill quede arriba si hay 2 líneas */
-  margin-bottom: 12px;
-`;
-
-const CodigoBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const Codigo = styled.span`
-  font-weight: 700;
-  font-size: 20px;
-`;
-
-const PrioridadText = styled.span`
+const PrioridadSpan = styled.span`
   font-size: 18px;
   font-weight: 700;
   color: ${({ $prioridad }) =>
@@ -174,7 +137,7 @@ const PrioridadText = styled.span`
       : "#555555"};
 `;
 
-const EstadoPill = styled.span`
+const EstadoSpan = styled.span`
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -206,28 +169,28 @@ const EstadoPill = styled.span`
       : "#555555"};
 `;
 
-const ItemsWrapper = styled.div`
+const Items = styled.div`
   margin: 20px 0;
   font-size: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
 
-const ItemRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-radius: 6px;
-  transition: background 0.2s;
+  .ItemRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-radius: 6px;
+    transition: background 0.2s;
 
-  &:hover {
-    background-color: #f0f0f0;
-  }
+    &:hover {
+      background-color: #f0f0f0;
+    }
 
-  span:first-child {
-    font-weight: 600;
+    span:first-child {
+      font-weight: 600;
+    }
   }
 `;
 
@@ -246,7 +209,7 @@ const FooterRow = styled.div`
   margin: 12px 0;
 `;
 
-const MarcarListoButton = styled.button`
+const ListButton = styled.button`
   width: 100%;
   padding: 8px 0;
   border-radius: 8px;

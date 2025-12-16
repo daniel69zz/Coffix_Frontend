@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import ProductCard from "../components/ProductCard";
-import { getCategorias } from "../utils/data_plana";
+import { getCategorias } from "../utils/fn_utils";
 import { useState, useEffect } from "react";
 import { useCart } from "../utils/CartContext";
 import { filtrarProductos } from "../services/productos";

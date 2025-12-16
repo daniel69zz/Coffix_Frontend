@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../services/AuthContext";
 import { useState } from "react";
-import { firstAllowedPath } from "../utils/role";
+import { rol_sitios } from "../utils/fn_utils";
 import logo from "/logo_sis_v3.png";
 import { enviarCorreoAviso } from "../services/email";
 
@@ -26,7 +26,7 @@ export default function Login() {
 
     try {
       const data = await login(usuario, password);
-      navigate(firstAllowedPath(data.rol), { replace: true });
+      navigate(rol_sitios(data.rol), { replace: true });
     } catch (err) {
       setError(err.message || "Error al iniciar sesión");
     }
@@ -59,7 +59,6 @@ export default function Login() {
       setForgotLoading(true);
       setForgotMessage("Verificando usuario...");
 
-      // Importante: el backend valida por nombre de usuario, no por correo
       const url = `http://localhost:8080/auth/exists?user=${encodeURIComponent(
         username
       )}`;
@@ -69,7 +68,7 @@ export default function Login() {
         throw new Error("Error al verificar usuario");
       }
 
-      // El endpoint devuelve únicamente true/false; lo convertimos explícitamente a booleano
+      // true / false
       const raw = (await res.text()).trim().toLowerCase();
       const exists = raw === "true" || raw === "1";
 

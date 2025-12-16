@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { IoLogOut } from "react-icons/io5";
 import logo from "/logo_sis_v3.png";
 
-import links_sidebar from "./data_aux";
+import links_sidebar from "../utils/data_aux";
 import { useAuth } from "../services/AuthContext";
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen }) {

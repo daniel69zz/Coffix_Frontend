@@ -17,7 +17,7 @@ export default function ProductCard({ producto }) {
   };
 
   return (
-    <Card>
+    <Container>
       <img src={`/${producto.path_img}`} alt={producto.nombre} />
 
       <CardContent>
@@ -39,10 +39,10 @@ export default function ProductCard({ producto }) {
 
         <AddButton onClick={bt_additem}>+ AGREGAR</AddButton>
       </CardContent>
-    </Card>
+    </Container>
   );
 }
-const Card = styled.div`
+const Container = styled.div`
   background-color: #dbd9d9ff;
   border-radius: 16px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

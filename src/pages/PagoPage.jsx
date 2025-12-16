@@ -13,7 +13,7 @@ export default function PagoPage({
 }) {
   const [efectivo, setEfectivo] = useState("");
   const [descuento, setDescuento] = useState("");
-  const [tipoDescuento, setTipoDescuento] = useState("porcentaje"); // "porcentaje" o "monto"
+  const [tipoDescuento, setTipoDescuento] = useState("porcentaje");
   const [pagado, setPagado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,7 +47,6 @@ export default function PagoPage({
       return;
     }
 
-    // Validar límites según tipo de descuento
     if (tipoDescuento === "porcentaje") {
       const numVal = Number(val);
       if (numVal > 100) {
@@ -65,7 +64,6 @@ export default function PagoPage({
     setDescuento(val);
   };
 
-  // Calcular descuento aplicado
   const descuentoNum = descuento === "" ? 0 : Number(descuento);
   let descuentoAplicado = 0;
 
@@ -75,7 +73,6 @@ export default function PagoPage({
     descuentoAplicado = descuentoNum;
   }
 
-  // Calcular total con descuento
   const totalConDescuento = Math.max(0, total - descuentoAplicado);
   const efectivoNum = efectivo === "" ? 0 : Number(efectivo);
   const cambio = Math.max(0, efectivoNum - totalConDescuento);
@@ -151,7 +148,7 @@ export default function PagoPage({
                 value={tipoDescuento}
                 onChange={(e) => {
                   setTipoDescuento(e.target.value);
-                  setDescuento(""); // Resetear descuento al cambiar tipo
+                  setDescuento("");
                 }}
               >
                 <option value="porcentaje">Porcentaje (%)</option>
