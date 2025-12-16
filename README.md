@@ -51,7 +51,7 @@ COFFIX busca solucionar este problema mediante un **POS web**, accesible, organi
 - PostgreSQL
 
 ### Deploy
-- Render (Frontend y Backend)
+- Render (Backend, Base de datos)
 
 ---
 
@@ -86,5 +86,33 @@ El modelo está normalizado y diseñado para soportar operaciones transaccionale
 ### 1️⃣ Clonar el repositorio
 
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/daniel69zz/Coffix_Frontend.git
 cd coffix-pos
+```
+
+### 2️⃣ Ejecutar el proyecto
+
+```bash
+npm run dev
+```
+
+### ⚠️ Consideración importante (Render):
+
+Si es la primera vez que usas el sistema o si vuelves a acceder después de aproximadamente 20 minutos sin actividad, el backend desplegado en Render puede tardar alrededor de 1 minuto en inicializarse (cold start).
+Durante este tiempo, el sistema puede no responder inmediatamente.
+Solo espera aproximadamente 1 minuto y vuelve a intentar iniciar sesión o recarga la página.
+
+### 🔑 Credenciales de prueba
+
+- **Administrador**
+  - Usuario: `admin`
+  - Contraseña: `adminpass`
+
+- **Cocina**
+  - Usuario: `cocina01`
+  - Contraseña: `cocina123`
+
+- **Cajero**
+  - Usuario: `cajero01`
+  - Contraseña: `cajero123`
+
