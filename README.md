@@ -1,16 +1,90 @@
-# React + Vite
+# COFFIX – Sistema POS para Cafetería
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+COFFIX es un sistema POS (Point of Sale) desarrollado como proyecto académico para la materia **Sistemas de Información**.  
+El sistema está orientado a cafeterías/minimarkets y permite gestionar **ventas**, **pedidos**, **productos**, **stock** y **usuarios con roles**, utilizando tecnologías modernas de desarrollo web.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧩 Descripción del Proyecto
 
-## React Compiler
+En muchos establecimientos pequeños, la gestión de ventas e inventarios aún se realiza de forma manual, lo que genera errores, pérdidas de información y retrasos en la atención al cliente.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+COFFIX busca solucionar este problema mediante un **POS web**, accesible, organizado y escalable, que centraliza la información y mejora el control operativo del negocio.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Funcionalidades Principales
+
+- Autenticación de usuarios
+- Control de acceso por roles
+  - Administrador
+  - Cajero
+  - Cocina
+- Gestión de productos
+  - Registro y edición
+  - Categorías
+  - Control de stock
+- Gestión de pedidos
+  - Creación de pedidos desde el carrito
+  - Detalle de productos por pedido
+  - Estados del pedido
+- Registro de pagos
+- Reposición de stock
+- Interfaz amigable y responsive
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+### Frontend
+- React
+- Vite
+- React Router
+- Styled Components
+
+### Backend
+- Java
+- Spring Boot
+- Spring Data JPA
+
+### Base de Datos
+- PostgreSQL
+
+### Deploy
+- Render (Frontend y Backend)
+
+---
+
+## 🗄️ Modelo de Base de Datos (Resumen)
+
+Tablas principales del sistema:
+
+- USUARIOS
+- TIPO_ROL
+- PRODUCTOS
+- TIPOS_PRODUCTO
+- PEDIDOS
+- DETALLE_PEDIDO
+- PEDIDO_PAGO
+- RESTOCK_PRODUCTOS
+
+El modelo está normalizado y diseñado para soportar operaciones transaccionales propias de un sistema POS.
+
+---
+
+## ⚙️ Requisitos del Sistema
+
+- Node.js 18+
+- Java 17 o 21
+- PostgreSQL
+- Maven
+
+---
+
+## ▶️ Ejecución del Proyecto en Local
+
+### 1️⃣ Clonar el repositorio
+
+```bash
+git clone <url-del-repositorio>
+cd coffix-pos
